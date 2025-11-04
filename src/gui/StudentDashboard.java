@@ -106,13 +106,13 @@ public class StudentDashboard extends JFrame {
         sidebar.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
         // Menu items
-        addMenuItem(sidebar, "🏠 Dashboard", e -> showDashboardHome());
-        addMenuItem(sidebar, "📚 My Courses", e -> showMyCourses());
-        addMenuItem(sidebar, "➕ Register Courses", e -> showCourseRegistration());
-        addMenuItem(sidebar, "📊 View Grades", e -> showGrades());
-        addMenuItem(sidebar, "💰 Fee Balance", e -> showFeeBalance());
-        addMenuItem(sidebar, "👤 My Profile", e -> showProfile());
-        addMenuItem(sidebar, "📢 Announcements", e -> showAnnouncements());
+        addMenuItem(sidebar, "Dashboard", e -> showDashboardHome());
+        addMenuItem(sidebar, "My Courses", e -> showMyCourses());
+        addMenuItem(sidebar, "Register Courses", e -> showCourseRegistration());
+        addMenuItem(sidebar, "View Grades", e -> showGrades());
+        addMenuItem(sidebar, "Fee Balance", e -> showFeeBalance());
+        addMenuItem(sidebar, "My Profile", e -> showProfile());
+        addMenuItem(sidebar, "Announcements", e -> showAnnouncements());
 
         sidebar.add(Box.createVerticalGlue());
 

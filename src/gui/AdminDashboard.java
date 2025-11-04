@@ -89,13 +89,13 @@ public class AdminDashboard extends JFrame {
         sidebar.setPreferredSize(new Dimension(250, 750));
         sidebar.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        addMenuItem(sidebar, "🏠 Dashboard", e -> showDashboardHome());
-        addMenuItem(sidebar, "👥 Manage Students", e -> showManageStudents());
-        addMenuItem(sidebar, "👨‍🏫 Manage Lecturers", e -> showManageLecturers());
-        addMenuItem(sidebar, "📚 Manage Courses", e -> showManageCourses());
-        addMenuItem(sidebar, "📊 Reports", e -> showReports());
-        addMenuItem(sidebar, "💰 Payment Records", e -> showPayments());
-        addMenuItem(sidebar, "📝 System Logs", e -> showLogs());
+        addMenuItem(sidebar, "Dashboard", e -> showDashboardHome());
+        addMenuItem(sidebar, "Manage Students", e -> showManageStudents());
+        addMenuItem(sidebar, "Manage Lecturers", e -> showManageLecturers());
+        addMenuItem(sidebar, "Manage Courses", e -> showManageCourses());
+        addMenuItem(sidebar, "Reports", e -> showReports());
+        addMenuItem(sidebar, "Payment Records", e -> showPayments());
+        addMenuItem(sidebar, "System Logs", e -> showLogs());
 
         sidebar.add(Box.createVerticalGlue());
 

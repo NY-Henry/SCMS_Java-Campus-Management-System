@@ -1,0 +1,66 @@
+# How to run our group project
+
+### 📋 Prerequisites
+
+1. Java installed
+2. MySQL Server running
+3. Database created (run `database/scms_schema.sql` first) - My Php admin or console to create the database and relevant tables first
+4. MySQL Connector JAR in `lib/` folder (already included ✅)
+
+
+Guides--
+
+> WINDOWS - Command Prompt or PowerShell
+
+i). Option 1: Using the Run Script (Easiest)
+
+
+Double-click `run.bat` in the root of our project. It will compile and run automatically!
+
+ii). Option 2: Manual Commands
+
+```open cmd
+> Navigate to project directory
+eg., , cd "C:\Users\HP\Desktop\OOP Final Papeer\OOP Final"
+
+>  Clean and create bin directory
+rmdir /s /q bin
+mkdir bin
+
+> Compile all Java files
+javac -d bin -cp "lib/*" src/Main.java src/database/*.java src/models/*.java src/services/*.java src/utils/*.java src/gui/*.java
+
+> Run the application
+java -cp "bin;lib/*" Main
+```
+
+
+
+## 🎯 ONE-LINE COMMAND -- this is for our usecase since we're using git (bash) 
+
+### Windows (Git Bash):
+
+```bash
+javac -d bin -cp "lib/*" src/**/*.java src/*.java && java -cp "bin;lib/*" Main
+```
+ 
+
+>>> 🔧 If Compilation Fails
+
+Just run this compiled version
+
+``bash
+# Windows
+java -cp "out/production/OOP Final;lib/*" Main
+``
+
+
+
+**Simplest way to run:**
+
+1. Double-click `run.bat` (Windows) 
+2. Login window will appear
+3. Use: admin / admin123
+
+
+our projects bat script handles everything: cleaning, compiling, and running!

@@ -92,12 +92,12 @@ public class LecturerDashboard extends JFrame {
         sidebar.setPreferredSize(new Dimension(250, 750));
         sidebar.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        addMenuItem(sidebar, "🏠 Dashboard", e -> showDashboardHome());
-        addMenuItem(sidebar, "📚 My Courses", e -> showMyCourses());
-        addMenuItem(sidebar, "👥 Class Lists", e -> showClassLists());
-        addMenuItem(sidebar, "📊 Upload Grades", e -> showUploadGrades());
-        addMenuItem(sidebar, "📢 Post Announcement", e -> showPostAnnouncement());
-        addMenuItem(sidebar, "👤 My Profile", e -> showProfile());
+        addMenuItem(sidebar, "Dashboard", e -> showDashboardHome());
+        addMenuItem(sidebar, "My Courses", e -> showMyCourses());
+        addMenuItem(sidebar, "Class Lists", e -> showClassLists());
+        addMenuItem(sidebar, "Upload Grades", e -> showUploadGrades());
+        addMenuItem(sidebar, "Post Announcement", e -> showPostAnnouncement());
+        addMenuItem(sidebar, "My Profile", e -> showProfile());
 
         sidebar.add(Box.createVerticalGlue());
 
