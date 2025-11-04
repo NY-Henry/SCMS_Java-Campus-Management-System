@@ -41,7 +41,7 @@ public class ManageLecturersPanel extends JPanel {
         // Style table header with better visibility
         lecturersTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         lecturersTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        lecturersTable.getTableHeader().setForeground(Color.WHITE);
+        lecturersTable.getTableHeader().setForeground(Color.BLACK);
         lecturersTable.getTableHeader().setOpaque(true);
         lecturersTable.getTableHeader().setReorderingAllowed(false);
         lecturersTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
