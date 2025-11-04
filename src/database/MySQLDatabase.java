@@ -66,6 +66,13 @@ public class MySQLDatabase implements DatabaseOperations {
         }
     }
 
+    /**
+     * Disconnect from database (alias for closeConnection)
+     */
+    public void disconnect() {
+        closeConnection();
+    }
+
     @Override
     public boolean insertData(String table, Map<String, Object> data) {
         if (!isConnected()) {
@@ -294,6 +301,26 @@ public class MySQLDatabase implements DatabaseOperations {
             System.err.println("Error executing prepared select!");
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * Execute an UPDATE, INSERT, or DELETE query
+     * Returns the number of rows affected
+     */
+    public int executeUpdate(String query) {
+        if (!isConnected()) {
+            System.err.println("No database connection!");
+            return -1;
+        }
+
+        try (Statement stmt = connection.createStatement()) {
+            return stmt.executeUpdate(query);
+
+        } catch (SQLException e) {
+            System.err.println("Error executing update: " + query);
+            e.printStackTrace();
+            return -1;
         }
     }
 }
