@@ -59,6 +59,20 @@ public class ManageStudentsPanel extends JPanel {
         refreshButton.setBorderPainted(false);
         refreshButton.addActionListener(e -> loadStudents());
 
+        JButton addButton = new JButton("Add Student");
+        addButton.setBackground(new Color(46, 204, 113));
+        addButton.setForeground(Color.WHITE);
+        addButton.setFocusPainted(false);
+        addButton.setBorderPainted(false);
+        addButton.addActionListener(e -> showAddStudentDialog());
+
+        JButton editButton = new JButton("Edit Student");
+        editButton.setBackground(new Color(243, 156, 18));
+        editButton.setForeground(Color.WHITE);
+        editButton.setFocusPainted(false);
+        editButton.setBorderPainted(false);
+        editButton.addActionListener(e -> showEditStudentDialog());
+
         JButton deleteButton = new JButton("Delete Student");
         deleteButton.setBackground(new Color(231, 76, 60));
         deleteButton.setForeground(Color.WHITE);
@@ -67,6 +81,8 @@ public class ManageStudentsPanel extends JPanel {
         deleteButton.addActionListener(e -> deleteSelectedStudent());
 
         buttonPanel.add(refreshButton);
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
 
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -263,6 +279,502 @@ public class ManageStudentsPanel extends JPanel {
                             "The student may have related records that prevent deletion.",
                     "Error", JOptionPane.ERROR_MESSAGE);
             System.err.println("DEBUG: ERROR during deletion:");
+            e.printStackTrace();
+            db.disconnect();
+        }
+    }
+
+    private void showAddStudentDialog() {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Add New Student", true);
+        dialog.setSize(500, 700);
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.setLayout(new BorderLayout());
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        // Form fields
+        JTextField usernameField = new JTextField(20);
+        JPasswordField passwordField = new JPasswordField(20);
+        JTextField emailField = new JTextField(20);
+        JTextField firstNameField = new JTextField(20);
+        JTextField lastNameField = new JTextField(20);
+        JTextField phoneField = new JTextField(20);
+        JTextField regNumberField = new JTextField(20);
+        JTextField programField = new JTextField(20);
+        JComboBox<Integer> yearComboBox = new JComboBox<>(new Integer[] { 1, 2, 3, 4, 5 });
+        JComboBox<Integer> semesterComboBox = new JComboBox<>(new Integer[] { 1, 2 });
+        JTextField feeBalanceField = new JTextField("0.00", 20);
+
+        // Add labels and fields
+        int row = 0;
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
+        formPanel.add(new JLabel("Username:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(usernameField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Password:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(emailField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("First Name:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(firstNameField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Last Name:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(lastNameField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Phone Number:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(phoneField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Registration Number:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(regNumberField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Program:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(programField, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Year of Study:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(yearComboBox, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Semester:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(semesterComboBox, gbc);
+
+        row++;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        formPanel.add(new JLabel("Fee Balance:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(feeBalanceField, gbc);
+
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(Color.WHITE);
+
+        JButton saveButton = new JButton("Save");
+        saveButton.setBackground(new Color(46, 204, 113));
+        saveButton.setForeground(Color.WHITE);
+        saveButton.setFocusPainted(false);
+        saveButton.addActionListener(e -> {
+            // Validate inputs
+            if (usernameField.getText().trim().isEmpty() ||
+                    passwordField.getPassword().length == 0 ||
+                    emailField.getText().trim().isEmpty() ||
+                    firstNameField.getText().trim().isEmpty() ||
+                    lastNameField.getText().trim().isEmpty() ||
+                    regNumberField.getText().trim().isEmpty() ||
+                    programField.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(dialog,
+                        "Please fill in all required fields!",
+                        "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Add student
+            try {
+                db.connect();
+
+                // 1. Insert into users table
+                String insertUser = "INSERT INTO users (username, password, role, email) VALUES (?, ?, 'STUDENT', ?)";
+                int userId = db.executeInsertAndGetId(insertUser, new Object[] {
+                        usernameField.getText().trim(),
+                        new String(passwordField.getPassword()),
+                        emailField.getText().trim()
+                });
+
+                if (userId == -1) {
+                    throw new Exception("Failed to create user account");
+                }
+
+                // 2. Insert into persons table
+                String insertPerson = "INSERT INTO persons (user_id, first_name, last_name, phone_number) VALUES (?, ?, ?, ?)";
+                int personId = db.executeInsertAndGetId(insertPerson, new Object[] {
+                        userId,
+                        firstNameField.getText().trim(),
+                        lastNameField.getText().trim(),
+                        phoneField.getText().trim()
+                });
+
+                if (personId == -1) {
+                    throw new Exception("Failed to create person record");
+                }
+
+                // 3. Insert into students table
+                String insertStudent = "INSERT INTO students (person_id, registration_number, program, year_of_study, semester, enrollment_date, fee_balance) "
+                        +
+                        "VALUES (?, ?, ?, ?, ?, CURDATE(), ?)";
+                boolean success = db.executePreparedQuery(insertStudent, new Object[] {
+                        personId,
+                        regNumberField.getText().trim(),
+                        programField.getText().trim(),
+                        yearComboBox.getSelectedItem(),
+                        semesterComboBox.getSelectedItem(),
+                        Double.parseDouble(feeBalanceField.getText().trim())
+                });
+
+                if (success) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Student added successfully!\n\n" +
+                                    "Username: " + usernameField.getText().trim() + "\n" +
+                                    "Registration Number: " + regNumberField.getText().trim(),
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                    dialog.dispose();
+
+                    // Refresh the table
+                    SwingUtilities.invokeLater(() -> {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        loadStudents();
+                    });
+                } else {
+                    throw new Exception("Failed to create student record");
+                }
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog,
+                        "Invalid fee balance format! Please enter a valid number.",
+                        "Validation Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog,
+                        "Error adding student: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            } finally {
+                db.disconnect();
+            }
+        });
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBackground(new Color(149, 165, 166));
+        cancelButton.setForeground(Color.WHITE);
+        cancelButton.setFocusPainted(false);
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.add(new JScrollPane(formPanel), BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
+
+    private void showEditStudentDialog() {
+        int selectedRow = studentsTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a student to edit.",
+                    "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get student details
+        int studentId = (int) tableModel.getValueAt(selectedRow, 0);
+
+        try {
+            db.connect();
+
+            // Fetch full student details
+            String query = "SELECT u.username, u.email, p.first_name, p.last_name, p.phone_number, " +
+                    "s.registration_number, s.program, s.year_of_study, s.semester, s.fee_balance, s.status " +
+                    "FROM students s " +
+                    "JOIN persons p ON s.person_id = p.person_id " +
+                    "JOIN users u ON p.user_id = u.user_id " +
+                    "WHERE s.student_id = " + studentId;
+
+            ResultSet rs = db.fetchData(query);
+
+            if (rs == null || !rs.next()) {
+                JOptionPane.showMessageDialog(this,
+                        "Error: Could not fetch student details.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Create dialog
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Student", true);
+            dialog.setSize(500, 700);
+            dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+            dialog.setLayout(new BorderLayout());
+
+            JPanel formPanel = new JPanel(new GridBagLayout());
+            formPanel.setBackground(Color.WHITE);
+            formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(5, 5, 5, 5);
+
+            // Form fields - pre-populated with existing data
+            JTextField usernameField = new JTextField(rs.getString("username"), 20);
+            usernameField.setEnabled(false); // Username cannot be changed
+            JTextField emailField = new JTextField(rs.getString("email"), 20);
+            JTextField firstNameField = new JTextField(rs.getString("first_name"), 20);
+            JTextField lastNameField = new JTextField(rs.getString("last_name"), 20);
+            JTextField phoneField = new JTextField(
+                    rs.getString("phone_number") != null ? rs.getString("phone_number") : "", 20);
+            JTextField regNumberField = new JTextField(rs.getString("registration_number"), 20);
+            regNumberField.setEnabled(false); // Registration number cannot be changed
+            JTextField programField = new JTextField(rs.getString("program"), 20);
+            JComboBox<Integer> yearComboBox = new JComboBox<>(new Integer[] { 1, 2, 3, 4, 5 });
+            yearComboBox.setSelectedItem(rs.getInt("year_of_study"));
+            JComboBox<Integer> semesterComboBox = new JComboBox<>(new Integer[] { 1, 2 });
+            semesterComboBox.setSelectedItem(rs.getInt("semester"));
+            JTextField feeBalanceField = new JTextField(String.format("%.2f", rs.getDouble("fee_balance")), 20);
+            JComboBox<String> statusComboBox = new JComboBox<>(
+                    new String[] { "ACTIVE", "SUSPENDED", "GRADUATED", "WITHDRAWN" });
+            statusComboBox.setSelectedItem(rs.getString("status"));
+
+            rs.close();
+            db.disconnect();
+
+            // Add labels and fields
+            int row = 0;
+
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.anchor = GridBagConstraints.WEST;
+            formPanel.add(new JLabel("Username:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(usernameField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Email:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(emailField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("First Name:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(firstNameField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Last Name:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(lastNameField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Phone Number:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(phoneField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Registration Number:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(regNumberField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Program:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(programField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Year of Study:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(yearComboBox, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Semester:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(semesterComboBox, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Fee Balance:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(feeBalanceField, gbc);
+
+            row++;
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            formPanel.add(new JLabel("Status:"), gbc);
+            gbc.gridx = 1;
+            formPanel.add(statusComboBox, gbc);
+
+            // Buttons
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton saveButton = new JButton("Save Changes");
+            saveButton.setBackground(new Color(243, 156, 18));
+            saveButton.setForeground(Color.WHITE);
+            saveButton.setFocusPainted(false);
+            saveButton.addActionListener(e -> {
+                // Validate inputs
+                if (emailField.getText().trim().isEmpty() ||
+                        firstNameField.getText().trim().isEmpty() ||
+                        lastNameField.getText().trim().isEmpty() ||
+                        programField.getText().trim().isEmpty()) {
+
+                    JOptionPane.showMessageDialog(dialog,
+                            "Please fill in all required fields!",
+                            "Validation Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Update student
+                try {
+                    db.connect();
+
+                    // Get person_id and user_id
+                    String getIdsQuery = "SELECT s.person_id, p.user_id " +
+                            "FROM students s " +
+                            "JOIN persons p ON s.person_id = p.person_id " +
+                            "WHERE s.student_id = " + studentId;
+                    ResultSet idsRs = db.fetchData(getIdsQuery);
+
+                    if (idsRs == null || !idsRs.next()) {
+                        throw new Exception("Could not find student IDs");
+                    }
+
+                    int personId = idsRs.getInt("person_id");
+                    int userId = idsRs.getInt("user_id");
+                    idsRs.close();
+
+                    // 1. Update users table
+                    String updateUser = "UPDATE users SET email = ? WHERE user_id = " + userId;
+                    db.executePreparedQuery(updateUser, new Object[] {
+                            emailField.getText().trim()
+                    });
+
+                    // 2. Update persons table
+                    String updatePerson = "UPDATE persons SET first_name = ?, last_name = ?, phone_number = ? WHERE person_id = "
+                            + personId;
+                    db.executePreparedQuery(updatePerson, new Object[] {
+                            firstNameField.getText().trim(),
+                            lastNameField.getText().trim(),
+                            phoneField.getText().trim()
+                    });
+
+                    // 3. Update students table
+                    String updateStudent = "UPDATE students SET program = ?, year_of_study = ?, semester = ?, fee_balance = ?, status = ? WHERE student_id = "
+                            + studentId;
+                    boolean success = db.executePreparedQuery(updateStudent, new Object[] {
+                            programField.getText().trim(),
+                            yearComboBox.getSelectedItem(),
+                            semesterComboBox.getSelectedItem(),
+                            Double.parseDouble(feeBalanceField.getText().trim()),
+                            statusComboBox.getSelectedItem()
+                    });
+
+                    if (success) {
+                        JOptionPane.showMessageDialog(dialog,
+                                "Student updated successfully!\n\n" +
+                                        "Name: " + firstNameField.getText() + " " + lastNameField.getText(),
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                        dialog.dispose();
+
+                        // Refresh the table
+                        SwingUtilities.invokeLater(() -> {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                            loadStudents();
+                        });
+                    } else {
+                        throw new Exception("Failed to update student record");
+                    }
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Invalid fee balance format! Please enter a valid number.",
+                            "Validation Error", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Error updating student: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                } finally {
+                    db.disconnect();
+                }
+            });
+
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.setBackground(new Color(149, 165, 166));
+            cancelButton.setForeground(Color.WHITE);
+            cancelButton.setFocusPainted(false);
+            cancelButton.addActionListener(e -> dialog.dispose());
+
+            buttonPanel.add(saveButton);
+            buttonPanel.add(cancelButton);
+
+            dialog.add(new JScrollPane(formPanel), BorderLayout.CENTER);
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+            dialog.setVisible(true);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading student details: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             db.disconnect();
         }
