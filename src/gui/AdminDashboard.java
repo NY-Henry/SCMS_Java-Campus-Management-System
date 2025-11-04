@@ -1,11 +1,13 @@
 package gui;
 
+import database.MySQLDatabase;
 import models.Admin;
 import services.CourseService;
 import utils.SessionManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.ResultSet;
 
 /**
  * Admin Dashboard - Main interface for administrators
@@ -14,10 +16,12 @@ public class AdminDashboard extends JFrame {
     private Admin admin;
     private JPanel contentPanel;
     private CourseService courseService;
+    private MySQLDatabase db;
 
     public AdminDashboard(Admin admin) {
         this.admin = admin;
         this.courseService = new CourseService();
+        this.db = MySQLDatabase.getInstance();
         initializeUI();
     }
 
@@ -148,10 +152,16 @@ public class AdminDashboard extends JFrame {
         statsPanel.setMaximumSize(new Dimension(1100, 120));
         statsPanel.setOpaque(false);
 
-        statsPanel.add(createStatCard("Total Students", "2", new Color(52, 152, 219)));
-        statsPanel.add(createStatCard("Total Lecturers", "2", new Color(155, 89, 182)));
-        statsPanel.add(createStatCard("Total Courses", "4", new Color(46, 204, 113)));
-        statsPanel.add(createStatCard("Active Users", "5", new Color(241, 196, 15)));
+        // Load dynamic statistics from database
+        int totalStudents = getStatCount("SELECT COUNT(*) as count FROM students WHERE status = 'ACTIVE'");
+        int totalLecturers = getStatCount("SELECT COUNT(*) as count FROM lecturers WHERE status = 'ACTIVE'");
+        int totalCourses = getStatCount("SELECT COUNT(*) as count FROM courses");
+        int activeUsers = getStatCount("SELECT COUNT(*) as count FROM users WHERE is_active = TRUE");
+
+        statsPanel.add(createStatCard("Total Students", String.valueOf(totalStudents), new Color(52, 152, 219)));
+        statsPanel.add(createStatCard("Total Lecturers", String.valueOf(totalLecturers), new Color(155, 89, 182)));
+        statsPanel.add(createStatCard("Total Courses", String.valueOf(totalCourses), new Color(46, 204, 113)));
+        statsPanel.add(createStatCard("Active Users", String.valueOf(activeUsers), new Color(241, 196, 15)));
 
         homePanel.add(statsPanel);
         homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
@@ -288,5 +298,34 @@ public class AdminDashboard extends JFrame {
             dispose();
             new LoginForm().setVisible(true);
         }
+    }
+
+    /**
+     * Helper method to get count statistics from database
+     */
+    private int getStatCount(String query) {
+        try {
+            // Ensure fresh connection
+            if (!db.isConnected()) {
+                db.connect();
+            }
+
+            ResultSet rs = db.fetchData(query);
+
+            if (rs != null && rs.next()) {
+                int count = rs.getInt("count");
+                rs.close();
+                return count;
+            }
+
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching stat count: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return 0; // Return 0 if query fails
     }
 }

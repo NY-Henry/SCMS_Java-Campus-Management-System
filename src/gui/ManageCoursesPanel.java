@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.ResultSet;
-import java.util.List;
 
 public class ManageCoursesPanel extends JPanel {
     private CourseService courseService;
@@ -101,18 +100,40 @@ public class ManageCoursesPanel extends JPanel {
 
     private void loadCourses() {
         tableModel.setRowCount(0);
-        List<Course> courses = courseService.getAllCourses();
 
-        for (Course course : courses) {
-            tableModel.addRow(new Object[] {
-                    course.getCourseId(),
-                    course.getCourseCode(),
-                    course.getCourseName(),
-                    course.getCredits(),
-                    course.getDepartment(),
-                    course.getYearLevel(),
-                    course.getSemester()
-            });
+        try {
+            // Ensure fresh connection
+            if (!db.isConnected()) {
+                db.connect();
+            }
+
+            String query = "SELECT course_id, course_code, course_name, credits, department, year_level, semester " +
+                    "FROM courses ORDER BY course_code";
+
+            ResultSet rs = db.fetchData(query);
+
+            while (rs != null && rs.next()) {
+                tableModel.addRow(new Object[] {
+                        rs.getInt("course_id"),
+                        rs.getString("course_code"),
+                        rs.getString("course_name"),
+                        rs.getInt("credits"),
+                        rs.getString("department"),
+                        rs.getInt("year_level"),
+                        rs.getInt("semester")
+                });
+            }
+
+            // Close ResultSet properly
+            if (rs != null) {
+                rs.close();
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading courses: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -191,18 +212,11 @@ public class ManageCoursesPanel extends JPanel {
                 course.setSemester(Integer.parseInt(semesterField.getText().trim()));
 
                 if (courseService.addCourse(course)) {
-                    JOptionPane.showMessageDialog(dialog, "Course added successfully!");
                     dialog.dispose();
+                    JOptionPane.showMessageDialog(ManageCoursesPanel.this, "Course added successfully!");
 
-                    // Refresh the table with a small delay
-                    SwingUtilities.invokeLater(() -> {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                        loadCourses();
-                    });
+                    // Refresh the table immediately on EDT
+                    SwingUtilities.invokeLater(() -> loadCourses());
                 } else {
                     JOptionPane.showMessageDialog(dialog, "Failed to add course!");
                 }
@@ -363,20 +377,16 @@ public class ManageCoursesPanel extends JPanel {
                             Integer.parseInt(capacityField.getText().trim())
                     });
 
+                    db.disconnect(); // Disconnect immediately after update
+
                     if (success) {
-                        JOptionPane.showMessageDialog(dialog,
+                        dialog.dispose();
+                        JOptionPane.showMessageDialog(ManageCoursesPanel.this,
                                 "Course updated successfully!",
                                 "Success", JOptionPane.INFORMATION_MESSAGE);
-                        dialog.dispose();
 
-                        SwingUtilities.invokeLater(() -> {
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-                            loadCourses();
-                        });
+                        // Refresh the table immediately on EDT
+                        SwingUtilities.invokeLater(() -> loadCourses());
                     } else {
                         JOptionPane.showMessageDialog(dialog,
                                 "Failed to update course!",
@@ -386,12 +396,12 @@ public class ManageCoursesPanel extends JPanel {
                     JOptionPane.showMessageDialog(dialog,
                             "Please enter valid numbers for Credits, Year, Semester, and Capacity!",
                             "Validation Error", JOptionPane.ERROR_MESSAGE);
+                    db.disconnect();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(dialog,
                             "Error: " + ex.getMessage(),
                             "Error", JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
-                } finally {
                     db.disconnect();
                 }
             });
@@ -483,15 +493,8 @@ public class ManageCoursesPanel extends JPanel {
                             "Code: " + courseCode,
                     "Success", JOptionPane.INFORMATION_MESSAGE);
 
-            // Refresh the table
-            SwingUtilities.invokeLater(() -> {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                loadCourses();
-            });
+            // Refresh the table immediately on EDT
+            SwingUtilities.invokeLater(() -> loadCourses());
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
