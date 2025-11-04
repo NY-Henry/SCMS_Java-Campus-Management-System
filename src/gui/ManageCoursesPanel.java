@@ -38,9 +38,14 @@ public class ManageCoursesPanel extends JPanel {
         coursesTable = new JTable(tableModel);
         coursesTable.setRowHeight(30);
         coursesTable.setFont(new Font("Arial", Font.PLAIN, 13));
-        coursesTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+
+        // Style table header with better visibility
+        coursesTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         coursesTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        coursesTable.getTableHeader().setForeground(Color.WHITE);
+        coursesTable.getTableHeader().setForeground(Color.BLACK);
+        coursesTable.getTableHeader().setOpaque(true);
+        coursesTable.getTableHeader().setReorderingAllowed(false);
+        coursesTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
 
         JScrollPane scrollPane = new JScrollPane(coursesTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));

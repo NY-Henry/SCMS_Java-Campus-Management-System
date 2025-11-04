@@ -37,9 +37,14 @@ public class ManageStudentsPanel extends JPanel {
         studentsTable = new JTable(tableModel);
         studentsTable.setRowHeight(30);
         studentsTable.setFont(new Font("Arial", Font.PLAIN, 13));
-        studentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+
+        // Style table header with better visibility
+        studentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         studentsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        studentsTable.getTableHeader().setForeground(Color.WHITE);
+        studentsTable.getTableHeader().setForeground(Color.BLACK);
+        studentsTable.getTableHeader().setOpaque(true);
+        studentsTable.getTableHeader().setReorderingAllowed(false);
+        studentsTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
 
         JScrollPane scrollPane = new JScrollPane(studentsTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));

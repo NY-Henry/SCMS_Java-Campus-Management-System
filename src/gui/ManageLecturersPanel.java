@@ -37,9 +37,14 @@ public class ManageLecturersPanel extends JPanel {
         lecturersTable = new JTable(tableModel);
         lecturersTable.setRowHeight(30);
         lecturersTable.setFont(new Font("Arial", Font.PLAIN, 13));
-        lecturersTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+
+        // Style table header with better visibility
+        lecturersTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         lecturersTable.getTableHeader().setBackground(new Color(52, 73, 94));
         lecturersTable.getTableHeader().setForeground(Color.WHITE);
+        lecturersTable.getTableHeader().setOpaque(true);
+        lecturersTable.getTableHeader().setReorderingAllowed(false);
+        lecturersTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
 
         JScrollPane scrollPane = new JScrollPane(lecturersTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
