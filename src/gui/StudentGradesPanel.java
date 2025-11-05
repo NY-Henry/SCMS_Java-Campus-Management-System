@@ -50,7 +50,7 @@ public class StudentGradesPanel extends JPanel {
         gradesTable.setFont(new Font("Arial", Font.PLAIN, 13));
         gradesTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         gradesTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        gradesTable.getTableHeader().setForeground(Color.WHITE);
+        gradesTable.getTableHeader().setForeground(Color.BLACK);
 
         JScrollPane scrollPane = new JScrollPane(gradesTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));

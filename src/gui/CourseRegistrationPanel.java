@@ -61,7 +61,7 @@ public class CourseRegistrationPanel extends JPanel {
         coursesTable.setFont(new Font("Arial", Font.PLAIN, 13));
         coursesTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         coursesTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        coursesTable.getTableHeader().setForeground(Color.WHITE);
+        coursesTable.getTableHeader().setForeground(Color.BLACK);
 
         // Hide Course ID column
         coursesTable.getColumnModel().getColumn(7).setMinWidth(0);
