@@ -29,6 +29,7 @@
 ## Feature Breakdown
 
 ### 1. Filter Panel (Top Section)
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ Filter by Action: [All Actions ▼]    Search: [_____________]   │
@@ -49,6 +50,7 @@
 ```
 
 ### 2. Logs Table (Main Section)
+
 ```
 ┌──────┬─────────────────────┬────────────────┬─────────┬─────────┬──────────────────────┬──────────────┐
 │ Log  │ Timestamp           │ User           │ Role    │ Action  │ Details              │ IP Address   │
@@ -71,6 +73,7 @@ Features:
 ```
 
 ### 3. Log Details Dialog (Double-click any row)
+
 ```
 ┌─────────────────── Log Details ────────────────────┐
 │                                                     │
@@ -94,6 +97,7 @@ Features:
 ```
 
 ### 4. Statistics Dialog (Click "View Statistics")
+
 ```
 ┌─────────────── System Activity Statistics ───────────────┐
 │                                                           │
@@ -126,6 +130,7 @@ Features:
 ```
 
 ### 5. Action Buttons (Bottom Section)
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                                                                  │
@@ -140,6 +145,7 @@ Button Details:
 ```
 
 ### 6. Clear Old Logs Dialog
+
 ```
 ┌───────────── Clear Old Logs ─────────────┐
 │                                           │
@@ -169,6 +175,7 @@ Button Details:
 ## Color Scheme
 
 ### Button Colors:
+
 - **Refresh**: Blue (#3498DB) - Primary action
 - **Clear Filters**: Gray (#95A5A6) - Secondary action
 - **View Statistics**: Purple (#9B59B6) - Info action
@@ -176,6 +183,7 @@ Button Details:
 - **Clear Old Logs**: Red (#E74C3C) - Danger action
 
 ### Table Colors:
+
 - **Header**: Dark Blue-Gray (#34495E)
 - **Row (Alternate)**: Light Gray (#ECF0F1)
 - **Selected Row**: Light Blue (#AED6F1)
@@ -184,6 +192,7 @@ Button Details:
 ## User Interactions
 
 ### Mouse Actions:
+
 ```
 Single Click Row     → Select row (highlight)
 Double Click Row     → Open details dialog
@@ -193,6 +202,7 @@ Type in Search       → Live filter results
 ```
 
 ### Keyboard Actions:
+
 ```
 ↑/↓ Arrow Keys      → Navigate table rows
 Enter               → Open selected row details
@@ -203,6 +213,7 @@ Esc                 → Close dialogs
 ## Sample Use Cases
 
 ### Use Case 1: Track User Activity
+
 ```
 1. Open System Logs
 2. Select "LOGIN" from filter dropdown
@@ -212,6 +223,7 @@ Esc                 → Close dialogs
 ```
 
 ### Use Case 2: Security Audit
+
 ```
 1. Open System Logs
 2. Select "LOGIN_FAILED" from filter
@@ -221,6 +233,7 @@ Esc                 → Close dialogs
 ```
 
 ### Use Case 3: Generate Activity Report
+
 ```
 1. Open System Logs
 2. Click "View Statistics"
@@ -231,6 +244,7 @@ Esc                 → Close dialogs
 ```
 
 ### Use Case 4: Database Maintenance
+
 ```
 1. Open System Logs
 2. Note total log count

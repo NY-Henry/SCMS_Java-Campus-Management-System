@@ -214,7 +214,7 @@ public class LoginForm extends JFrame {
                     if (user != null) {
                         // Log successful login
                         logService.logLogin(user.getUserId(), username, user.getRole());
-                        
+
                         // Store user in session
                         SessionManager.getInstance().setCurrentUser(user);
 
@@ -227,7 +227,7 @@ public class LoginForm extends JFrame {
                     } else {
                         // Log failed login attempt
                         logService.logFailedLogin(username);
-                        
+
                         JOptionPane.showMessageDialog(LoginForm.this,
                                 "Invalid username or password!",
                                 "Login Failed", JOptionPane.ERROR_MESSAGE);

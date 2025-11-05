@@ -148,7 +148,7 @@ public class SystemLogsPanel extends JPanel {
                 BorderFactory.createLineBorder(new Color(189, 195, 199)),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
-        String[] columns = {"Log ID", "Timestamp", "User", "Role", "Action", "Details", "IP Address"};
+        String[] columns = { "Log ID", "Timestamp", "User", "Role", "Action", "Details", "IP Address" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -164,10 +164,10 @@ public class SystemLogsPanel extends JPanel {
         logsTable.getTableHeader().setForeground(Color.WHITE);
 
         // Set column widths
-        logsTable.getColumnModel().getColumn(0).setPreferredWidth(60);  // Log ID
+        logsTable.getColumnModel().getColumn(0).setPreferredWidth(60); // Log ID
         logsTable.getColumnModel().getColumn(1).setPreferredWidth(140); // Timestamp
         logsTable.getColumnModel().getColumn(2).setPreferredWidth(150); // User
-        logsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Role
+        logsTable.getColumnModel().getColumn(3).setPreferredWidth(80); // Role
         logsTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Action
         logsTable.getColumnModel().getColumn(5).setPreferredWidth(300); // Details
         logsTable.getColumnModel().getColumn(6).setPreferredWidth(120); // IP Address
@@ -245,7 +245,7 @@ public class SystemLogsPanel extends JPanel {
                     "LEFT JOIN persons p ON u.user_id = p.user_id " +
                     "ORDER BY l.timestamp DESC";
 
-            ResultSet rs = db.executePreparedSelect(sql, new Object[]{});
+            ResultSet rs = db.executePreparedSelect(sql, new Object[] {});
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             int count = 0;
 
@@ -268,6 +268,9 @@ public class SystemLogsPanel extends JPanel {
 
             totalLogsLabel.setText("Total Logs: " + count);
             filteredLogsLabel.setText("Filtered: " + count);
+
+            // Notify table that data has changed
+            tableModel.fireTableDataChanged();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -444,7 +447,7 @@ public class SystemLogsPanel extends JPanel {
     }
 
     private void clearOldLogs() {
-        String[] options = {"Last 7 Days", "Last 30 Days", "Last 90 Days", "Last Year", "Cancel"};
+        String[] options = { "Last 7 Days", "Last 30 Days", "Last 90 Days", "Last Year", "Cancel" };
         int choice = JOptionPane.showOptionDialog(this,
                 "Delete logs older than:",
                 "Clear Old Logs",
@@ -482,26 +485,35 @@ public class SystemLogsPanel extends JPanel {
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
+                // Ensure database connection
                 if (!db.isConnected()) {
                     db.connect();
                 }
 
                 String sql = "DELETE FROM system_logs WHERE timestamp < DATE_SUB(NOW(), INTERVAL ? DAY)";
-                boolean deleted = db.executePreparedQuery(sql, new Object[]{days});
+                boolean deleted = db.executePreparedQuery(sql, new Object[] { days });
+
+                // Reload logs to reflect changes
+                loadLogs();
+
+                // Reapply current filters if any
+                applyFilter();
+
+                // Force UI update
+                revalidate();
+                repaint();
 
                 if (deleted) {
                     JOptionPane.showMessageDialog(this,
-                            "Old log entries deleted successfully!",
+                            "Old log entries deleted successfully!\n\nThe logs have been refreshed.",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this,
-                            "No logs were deleted.",
+                            "No logs were deleted.\n\nPossibly no logs matched the selected time period.",
                             "Info",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
-
-                loadLogs();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -539,26 +551,26 @@ public class SystemLogsPanel extends JPanel {
             int index = 0;
 
             // Total logs
-            ResultSet rs = db.executePreparedSelect("SELECT COUNT(*) as count FROM system_logs", new Object[]{});
+            ResultSet rs = db.executePreparedSelect("SELECT COUNT(*) as count FROM system_logs", new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Total Log Entries", String.valueOf(rs.getInt("count"))};
+                stats[index++] = new String[] { "Total Log Entries", String.valueOf(rs.getInt("count")) };
                 rs.close();
             }
 
             // Logs today
             rs = db.executePreparedSelect(
-                    "SELECT COUNT(*) as count FROM system_logs WHERE DATE(timestamp) = CURDATE()", new Object[]{});
+                    "SELECT COUNT(*) as count FROM system_logs WHERE DATE(timestamp) = CURDATE()", new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Logs Today", String.valueOf(rs.getInt("count"))};
+                stats[index++] = new String[] { "Logs Today", String.valueOf(rs.getInt("count")) };
                 rs.close();
             }
 
             // Logs this week
             rs = db.executePreparedSelect(
                     "SELECT COUNT(*) as count FROM system_logs WHERE timestamp >= DATE_SUB(NOW(), INTERVAL 7 DAY)",
-                    new Object[]{});
+                    new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Logs This Week", String.valueOf(rs.getInt("count"))};
+                stats[index++] = new String[] { "Logs This Week", String.valueOf(rs.getInt("count")) };
                 rs.close();
             }
 
@@ -569,35 +581,37 @@ public class SystemLogsPanel extends JPanel {
                             "JOIN users u ON l.user_id = u.user_id " +
                             "JOIN persons p ON u.user_id = p.user_id " +
                             "GROUP BY l.user_id ORDER BY count DESC LIMIT 1",
-                    new Object[]{});
+                    new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Most Active User", rs.getString("name") + " (" + rs.getInt("count") + " actions)"};
+                stats[index++] = new String[] { "Most Active User",
+                        rs.getString("name") + " (" + rs.getInt("count") + " actions)" };
                 rs.close();
             }
 
             // Most common action
             rs = db.executePreparedSelect(
                     "SELECT action, COUNT(*) as count FROM system_logs GROUP BY action ORDER BY count DESC LIMIT 1",
-                    new Object[]{});
+                    new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Most Common Action", rs.getString("action") + " (" + rs.getInt("count") + " times)"};
+                stats[index++] = new String[] { "Most Common Action",
+                        rs.getString("action") + " (" + rs.getInt("count") + " times)" };
                 rs.close();
             }
 
             // Login count today
             rs = db.executePreparedSelect(
                     "SELECT COUNT(*) as count FROM system_logs WHERE action = 'LOGIN' AND DATE(timestamp) = CURDATE()",
-                    new Object[]{});
+                    new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Logins Today", String.valueOf(rs.getInt("count"))};
+                stats[index++] = new String[] { "Logins Today", String.valueOf(rs.getInt("count")) };
                 rs.close();
             }
 
             // Failed logins (if you track them)
             rs = db.executePreparedSelect(
-                    "SELECT COUNT(*) as count FROM system_logs WHERE action LIKE '%FAILED%'", new Object[]{});
+                    "SELECT COUNT(*) as count FROM system_logs WHERE action LIKE '%FAILED%'", new Object[] {});
             if (rs != null && rs.next()) {
-                stats[index++] = new String[]{"Failed Login Attempts", String.valueOf(rs.getInt("count"))};
+                stats[index++] = new String[] { "Failed Login Attempts", String.valueOf(rs.getInt("count")) };
                 rs.close();
             }
 
@@ -605,15 +619,16 @@ public class SystemLogsPanel extends JPanel {
             rs = db.executePreparedSelect(
                     "SELECT u.role, COUNT(*) as count FROM system_logs l " +
                             "JOIN users u ON l.user_id = u.user_id GROUP BY u.role",
-                    new Object[]{});
+                    new Object[] {});
             StringBuilder roleStats = new StringBuilder();
             if (rs != null) {
                 while (rs.next()) {
-                    if (roleStats.length() > 0) roleStats.append(", ");
+                    if (roleStats.length() > 0)
+                        roleStats.append(", ");
                     roleStats.append(rs.getString("role")).append(": ").append(rs.getInt("count"));
                 }
                 rs.close();
-                stats[index++] = new String[]{"Actions by Role", roleStats.toString()};
+                stats[index++] = new String[] { "Actions by Role", roleStats.toString() };
             }
 
             // Create stats display

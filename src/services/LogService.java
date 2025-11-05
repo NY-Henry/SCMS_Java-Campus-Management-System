@@ -16,8 +16,10 @@ public class LogService {
     /**
      * Log a system action
      *
-     * @param userId  The user ID performing the action (can be null for system actions)
-     * @param action  The action type (e.g., LOGIN, LOGOUT, CREATE, UPDATE, DELETE, VIEW)
+     * @param userId  The user ID performing the action (can be null for system
+     *                actions)
+     * @param action  The action type (e.g., LOGIN, LOGOUT, CREATE, UPDATE, DELETE,
+     *                VIEW)
      * @param details Detailed description of the action
      */
     public void logAction(Integer userId, String action, String details) {
@@ -29,7 +31,7 @@ public class LogService {
             String ipAddress = getIpAddress();
 
             String sql = "INSERT INTO system_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)";
-            db.executePreparedQuery(sql, new Object[]{userId, action, details, ipAddress});
+            db.executePreparedQuery(sql, new Object[] { userId, action, details, ipAddress });
 
         } catch (Exception e) {
             System.err.println("Error logging action: " + e.getMessage());

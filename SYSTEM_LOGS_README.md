@@ -1,11 +1,13 @@
 # System Logs Feature Documentation
 
 ## Overview
+
 The System Logs feature provides comprehensive activity tracking and monitoring for the Smart Campus Management System (SCMS). It records all major user actions, authentication events, and system operations.
 
 ## Features
 
 ### 1. **Comprehensive Logging**
+
 - User login/logout tracking
 - Failed login attempts monitoring
 - Record creation, updates, and deletions
@@ -16,19 +18,23 @@ The System Logs feature provides comprehensive activity tracking and monitoring 
 - Grade submissions
 
 ### 2. **Log Viewing Interface**
+
 - **Table Display**: Shows all logs in a sortable, filterable table
 - **Columns**: Log ID, Timestamp, User, Role, Action, Details, IP Address
 - **Real-time Updates**: Refresh button to load latest logs
 - **Double-click Details**: Click any log entry to view full details in a dialog
 
 ### 3. **Filtering & Search**
+
 - **Action Filter**: Filter by action type (LOGIN, LOGOUT, CREATE, UPDATE, DELETE, VIEW, EXPORT, REGISTER)
 - **Text Search**: Search across all columns for specific keywords
 - **Clear Filters**: Reset all filters to view all logs
 - **Live Filtering**: Results update as you type
 
 ### 4. **Statistics**
+
 The "View Statistics" button provides:
+
 - Total log entries
 - Logs today
 - Logs this week
@@ -39,13 +45,16 @@ The "View Statistics" button provides:
 - Actions by role breakdown
 
 ### 5. **Export Functionality**
+
 - Export filtered logs to CSV format
 - Includes all visible columns
 - Timestamped filenames for organization
 - Saved in `reports/` directory
 
 ### 6. **Maintenance**
+
 **Clear Old Logs** feature allows administrators to delete logs older than:
+
 - Last 7 Days
 - Last 30 Days
 - Last 90 Days
@@ -56,11 +65,13 @@ This helps maintain database performance and manage storage.
 ## Usage
 
 ### Accessing System Logs
+
 1. Log in as Administrator
 2. Click "System Logs" in the sidebar menu
 3. The logs panel will display all recorded activities
 
 ### Viewing Log Details
+
 1. Double-click any row in the logs table
 2. A dialog will appear showing full details including:
    - Log ID
@@ -72,23 +83,27 @@ This helps maintain database performance and manage storage.
    - Full details text
 
 ### Filtering Logs
+
 1. **By Action**: Select action type from dropdown (e.g., "LOGIN", "CREATE")
 2. **By Search**: Type keywords in the search field
 3. **Combined**: Use both filters together for precise results
 4. Click "Clear Filters" to reset
 
 ### Exporting Logs
+
 1. Apply desired filters (optional)
 2. Click "Export to CSV" button
 3. A success message will show the file location
 4. File is saved as `reports/system_logs_[timestamp].csv`
 
 ### Viewing Statistics
+
 1. Click "View Statistics" button
 2. A dialog displays comprehensive system activity metrics
 3. Review user activity patterns and system usage
 
 ### Clearing Old Logs
+
 1. Click "Clear Old Logs" button
 2. Select time period (7, 30, 90, or 365 days)
 3. Confirm the deletion
@@ -97,6 +112,7 @@ This helps maintain database performance and manage storage.
 ## Integration with Other Features
 
 ### LogService Class
+
 The `LogService` class provides centralized logging functionality used throughout the application:
 
 ```java
@@ -116,7 +132,9 @@ logService.logAction(userId, "ACTION_TYPE", "Action details");
 ```
 
 ### Automatic Logging
+
 The following actions are automatically logged:
+
 - ✅ User authentication (login/logout)
 - ✅ Failed login attempts
 - ⚠️ Profile updates (requires integration)
@@ -147,11 +165,13 @@ CREATE TABLE system_logs (
 ## Sample Log Data
 
 To populate sample logs for testing, run:
+
 ```sql
 source database/sample_logs.sql;
 ```
 
 This will create:
+
 - 25+ sample log entries
 - Mix of different action types
 - Logs from different user roles
@@ -176,6 +196,7 @@ This will create:
 ## Future Enhancements
 
 Potential improvements:
+
 - [ ] Real-time log streaming
 - [ ] Email alerts for critical actions
 - [ ] Advanced analytics dashboard
@@ -188,17 +209,20 @@ Potential improvements:
 ## Troubleshooting
 
 ### Logs Not Appearing
+
 - Check database connection
 - Verify `system_logs` table exists
 - Click "Refresh" button
 - Check for SQL errors in console
 
 ### Export Not Working
+
 - Ensure `reports/` directory has write permissions
 - Check available disk space
 - Verify file path is accessible
 
 ### Slow Performance
+
 - Clear old logs regularly
 - Apply filters before loading
 - Check database indexes

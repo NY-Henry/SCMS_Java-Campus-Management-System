@@ -281,7 +281,7 @@ public class AdminDashboard extends JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             // Log the logout action
             logService.logLogout(admin.getUserId(), admin.getFullName(), "ADMIN");
-            
+
             SessionManager.getInstance().logout();
             dispose();
             new LoginForm().setVisible(true);
