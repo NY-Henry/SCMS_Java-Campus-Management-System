@@ -114,7 +114,7 @@ public class UploadGradesPanel extends JPanel {
         gbc.gridy = 5;
         JButton submitButton = new JButton("Upload Grade");
         submitButton.setBackground(new Color(46, 204, 113));
-        submitButton.setForeground(Color.WHITE);
+        submitButton.setForeground(Color.BLACK);
         submitButton.setFocusPainted(false);
         submitButton.setPreferredSize(new Dimension(150, 35));
         submitButton.addActionListener(e -> uploadGrade());
