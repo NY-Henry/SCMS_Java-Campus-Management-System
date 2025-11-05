@@ -47,18 +47,14 @@ public class AnnouncementService {
                 "a.target_audience, a.course_id, c.course_name, " +
                 "a.posted_at, a.expires_at, a.is_active " +
                 "FROM announcements a " +
-                "JOIN users u ON a.posted_by = u.user_id " +
-                "JOIN persons p ON u.person_id = p.person_id " +
+                "JOIN persons p ON a.posted_by = p.user_id " +
                 "LEFT JOIN courses c ON a.course_id = c.course_id " +
                 "WHERE a.is_active = TRUE " +
                 "AND (a.target_audience = 'ALL' OR a.target_audience = 'STUDENTS') " +
                 "AND (a.expires_at IS NULL OR a.expires_at > NOW()) " +
                 "ORDER BY a.posted_at DESC";
 
-        System.out.println("DEBUG: Fetching announcements for STUDENTS");
-        List<Announcement> result = executeAnnouncementQuery(sql, null);
-        System.out.println("DEBUG: Found " + result.size() + " announcements for students");
-        return result;
+        return executeAnnouncementQuery(sql, null);
     }
 
     /**
@@ -74,18 +70,14 @@ public class AnnouncementService {
                 "a.target_audience, a.course_id, c.course_name, " +
                 "a.posted_at, a.expires_at, a.is_active " +
                 "FROM announcements a " +
-                "JOIN users u ON a.posted_by = u.user_id " +
-                "JOIN persons p ON u.person_id = p.person_id " +
+                "JOIN persons p ON a.posted_by = p.user_id " +
                 "LEFT JOIN courses c ON a.course_id = c.course_id " +
                 "WHERE a.is_active = TRUE " +
                 "AND (a.target_audience = 'ALL' OR a.target_audience = 'LECTURERS') " +
                 "AND (a.expires_at IS NULL OR a.expires_at > NOW()) " +
                 "ORDER BY a.posted_at DESC";
 
-        System.out.println("DEBUG: Fetching announcements for LECTURERS");
-        List<Announcement> result = executeAnnouncementQuery(sql, null);
-        System.out.println("DEBUG: Found " + result.size() + " announcements for lecturers");
-        return result;
+        return executeAnnouncementQuery(sql, null);
     }
 
     /**
@@ -101,8 +93,7 @@ public class AnnouncementService {
                 "a.target_audience, a.course_id, c.course_name, " +
                 "a.posted_at, a.expires_at, a.is_active " +
                 "FROM announcements a " +
-                "JOIN users u ON a.posted_by = u.user_id " +
-                "JOIN persons p ON u.person_id = p.person_id " +
+                "JOIN persons p ON a.posted_by = p.user_id " +
                 "LEFT JOIN courses c ON a.course_id = c.course_id " +
                 "WHERE a.is_active = TRUE " +
                 "AND a.target_audience = 'SPECIFIC_COURSE' " +
@@ -127,8 +118,7 @@ public class AnnouncementService {
                 "a.target_audience, a.course_id, c.course_name, " +
                 "a.posted_at, a.expires_at, a.is_active " +
                 "FROM announcements a " +
-                "JOIN users u ON a.posted_by = u.user_id " +
-                "JOIN persons p ON u.person_id = p.person_id " +
+                "JOIN persons p ON a.posted_by = p.user_id " +
                 "LEFT JOIN courses c ON a.course_id = c.course_id " +
                 "WHERE a.posted_by = ? " +
                 "ORDER BY a.posted_at DESC";
@@ -157,15 +147,11 @@ public class AnnouncementService {
         List<Announcement> announcements = new ArrayList<>();
 
         try {
-            System.out.println("DEBUG: Executing query: " + sql);
             ResultSet rs = params != null ? db.executePreparedSelect(sql, params)
                     : db.executePreparedSelect(sql, new Object[] {});
 
             if (rs != null) {
-                System.out.println("DEBUG: ResultSet is not null");
-                int count = 0;
                 while (rs.next()) {
-                    count++;
                     Announcement announcement = new Announcement();
                     announcement.setAnnouncementId(rs.getInt("announcement_id"));
                     announcement.setTitle(rs.getString("title"));
@@ -196,15 +182,10 @@ public class AnnouncementService {
                     announcement.setActive(rs.getBoolean("is_active"));
 
                     announcements.add(announcement);
-                    System.out.println("DEBUG: Added announcement: " + announcement.getTitle());
                 }
-                System.out.println("DEBUG: Processed " + count + " rows from ResultSet");
                 rs.close();
-            } else {
-                System.out.println("DEBUG: ResultSet is NULL!");
             }
         } catch (Exception e) {
-            System.err.println("DEBUG: Error in executeAnnouncementQuery:");
             e.printStackTrace();
         }
 

@@ -69,7 +69,6 @@ public class AnnouncementsPanel extends JPanel {
         List<Announcement> announcements;
 
         // Load announcements based on role
-        System.out.println("DEBUG AnnouncementsPanel: Loading announcements for role: " + role);
         if ("STUDENT".equalsIgnoreCase(role)) {
             announcements = announcementService.getAnnouncementsForStudents();
         } else if ("LECTURER".equalsIgnoreCase(role)) {
@@ -77,8 +76,6 @@ public class AnnouncementsPanel extends JPanel {
         } else {
             announcements = List.of(); // Empty list for other roles
         }
-
-        System.out.println("DEBUG AnnouncementsPanel: Received " + announcements.size() + " announcements");
 
         if (announcements.isEmpty()) {
             JLabel noAnnouncementsLabel = new JLabel("No announcements at this time.");
