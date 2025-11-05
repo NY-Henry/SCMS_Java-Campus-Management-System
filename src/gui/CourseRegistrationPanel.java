@@ -1,13 +1,13 @@
 package gui;
 
-import models.Course;
+import database.MySQLDatabase;
 import models.Student;
 import services.CourseService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
+import java.sql.ResultSet;
 
 /**
  * Panel for registering new courses
@@ -15,12 +15,14 @@ import java.util.List;
 public class CourseRegistrationPanel extends JPanel {
     private Student student;
     private CourseService courseService;
+    private MySQLDatabase db;
     private JTable coursesTable;
     private DefaultTableModel tableModel;
 
     public CourseRegistrationPanel(Student student, CourseService courseService) {
         this.student = student;
         this.courseService = courseService;
+        this.db = MySQLDatabase.getInstance();
         initializeUI();
         loadAvailableCourses();
     }
@@ -45,7 +47,8 @@ public class CourseRegistrationPanel extends JPanel {
         infoPanel.add(infoLabel);
 
         // Table
-        String[] columns = { "Course Code", "Course Name", "Credits", "Lecturer", "Department", "Course ID" };
+        String[] columns = { "Course Code", "Course Name", "Credits", "Year", "Semester", "Lecturer", "Department",
+                "Course ID" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -61,8 +64,8 @@ public class CourseRegistrationPanel extends JPanel {
         coursesTable.getTableHeader().setForeground(Color.WHITE);
 
         // Hide Course ID column
-        coursesTable.getColumnModel().getColumn(5).setMinWidth(0);
-        coursesTable.getColumnModel().getColumn(5).setMaxWidth(0);
+        coursesTable.getColumnModel().getColumn(7).setMinWidth(0);
+        coursesTable.getColumnModel().getColumn(7).setMaxWidth(0);
 
         JScrollPane scrollPane = new JScrollPane(coursesTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
@@ -104,18 +107,52 @@ public class CourseRegistrationPanel extends JPanel {
     private void loadAvailableCourses() {
         tableModel.setRowCount(0);
 
-        List<Course> courses = courseService.getAvailableCourses(
-                student.getYearOfStudy(), student.getSemester());
+        try {
+            // Ensure fresh connection
+            if (!db.isConnected()) {
+                db.connect();
+            }
 
-        for (Course course : courses) {
-            tableModel.addRow(new Object[] {
-                    course.getCourseCode(),
-                    course.getCourseName(),
-                    course.getCredits(),
-                    course.getLecturerName() != null ? course.getLecturerName() : "TBA",
-                    course.getDepartment(),
-                    course.getCourseId()
-            });
+            // Load ALL active courses (not filtered by student's year/semester)
+            String query = "SELECT c.course_id, c.course_code, c.course_name, c.credits, " +
+                    "c.year_level, c.semester, c.department, " +
+                    "CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.last_name, '')) as lecturer_name " +
+                    "FROM courses c " +
+                    "LEFT JOIN lecturers l ON c.lecturer_id = l.lecturer_id " +
+                    "LEFT JOIN persons p ON l.person_id = p.person_id " +
+                    "WHERE c.is_active = TRUE " +
+                    "ORDER BY c.year_level, c.semester, c.course_code";
+
+            ResultSet rs = db.fetchData(query);
+
+            while (rs != null && rs.next()) {
+                String lecturerName = rs.getString("lecturer_name");
+                if (lecturerName == null || lecturerName.trim().isEmpty()) {
+                    lecturerName = "TBA";
+                }
+
+                tableModel.addRow(new Object[] {
+                        rs.getString("course_code"),
+                        rs.getString("course_name"),
+                        rs.getInt("credits"),
+                        rs.getInt("year_level"),
+                        rs.getInt("semester"),
+                        lecturerName,
+                        rs.getString("department"),
+                        rs.getInt("course_id")
+                });
+            }
+
+            // Close ResultSet properly
+            if (rs != null) {
+                rs.close();
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading courses: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -131,7 +168,7 @@ public class CourseRegistrationPanel extends JPanel {
 
         String courseCode = (String) tableModel.getValueAt(selectedRow, 0);
         String courseName = (String) tableModel.getValueAt(selectedRow, 1);
-        int courseId = (int) tableModel.getValueAt(selectedRow, 5);
+        int courseId = (int) tableModel.getValueAt(selectedRow, 7);
 
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Register for " + courseCode + " - " + courseName + "?",
