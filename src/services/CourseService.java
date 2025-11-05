@@ -32,23 +32,51 @@ public class CourseService {
                 throw new IllegalArgumentException("Course not found or inactive!");
             }
 
-            // Check for duplicate registration (only check: student can only register once)
+            // Check if student is currently registered
             if (isAlreadyRegistered(studentId, courseId, academicYear, semester)) {
                 throw new IllegalStateException("Already registered for this course!");
             }
 
-            // No capacity check - allow unlimited registrations
+            // Check if a dropped registration exists (due to unique constraint)
+            String checkDroppedQuery = "SELECT registration_id FROM course_registrations " +
+                    "WHERE student_id = ? AND course_id = ? AND academic_year = ? " +
+                    "AND semester = ? AND status = 'DROPPED'";
 
-            // Register the student
-            String query = "INSERT INTO course_registrations (student_id, course_id, academic_year, semester, status) "
-                    +
-                    "VALUES (?, ?, ?, ?, 'REGISTERED')";
-
-            boolean success = db.executePreparedQuery(query,
+            ResultSet rs = db.executePreparedSelect(checkDroppedQuery,
                     new Object[] { studentId, courseId, academicYear, semester });
 
-            if (success) {
-                System.out.println("Successfully registered for course: " + course.getCourseCode());
+            boolean hadDroppedRegistration = (rs != null && rs.next());
+
+            if (rs != null) {
+                rs.close();
+            }
+
+            boolean success;
+
+            if (hadDroppedRegistration) {
+                // Update the dropped registration back to REGISTERED
+                String updateQuery = "UPDATE course_registrations SET status = 'REGISTERED', " +
+                        "registration_date = CURRENT_TIMESTAMP " +
+                        "WHERE student_id = ? AND course_id = ? AND academic_year = ? AND semester = ?";
+
+                success = db.executePreparedQuery(updateQuery,
+                        new Object[] { studentId, courseId, academicYear, semester });
+
+                if (success) {
+                    System.out.println("Re-registered for previously dropped course: " + course.getCourseCode());
+                }
+            } else {
+                // Insert new registration
+                String insertQuery = "INSERT INTO course_registrations (student_id, course_id, academic_year, semester, status) "
+                        +
+                        "VALUES (?, ?, ?, ?, 'REGISTERED')";
+
+                success = db.executePreparedQuery(insertQuery,
+                        new Object[] { studentId, courseId, academicYear, semester });
+
+                if (success) {
+                    System.out.println("Successfully registered for course: " + course.getCourseCode());
+                }
             }
 
             return success;
@@ -67,16 +95,25 @@ public class CourseService {
      * Drop a course registration
      */
     public boolean dropCourse(int registrationId, int studentId) {
+        ResultSet rs = null;
         try {
+            // Debug output
+            System.out.println(
+                    "DEBUG CourseService.dropCourse: registration_id=" + registrationId + ", student_id=" + studentId);
+
             // Verify the registration belongs to the student
             String checkQuery = "SELECT registration_id FROM course_registrations " +
                     "WHERE registration_id = ? AND student_id = ? AND status = 'REGISTERED'";
 
-            ResultSet rs = db.executePreparedSelect(checkQuery, new Object[] { registrationId, studentId });
+            rs = db.executePreparedSelect(checkQuery, new Object[] { registrationId, studentId });
 
             if (rs == null || !rs.next()) {
+                System.err.println("DEBUG: Registration not found or already dropped");
                 throw new IllegalArgumentException("Invalid registration or already dropped!");
             }
+
+            // Close the ResultSet before executing update
+            rs.close();
 
             // Update status to DROPPED
             String updateQuery = "UPDATE course_registrations SET status = 'DROPPED' WHERE registration_id = ?";
@@ -84,6 +121,8 @@ public class CourseService {
 
             if (success) {
                 System.out.println("Course dropped successfully!");
+            } else {
+                System.err.println("DEBUG: Update query failed");
             }
 
             return success;
@@ -95,6 +134,15 @@ public class CourseService {
             System.err.println("Error dropping course!");
             e.printStackTrace();
             return false;
+        } finally {
+            // Ensure ResultSet is closed
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

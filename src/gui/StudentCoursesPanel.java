@@ -1,13 +1,13 @@
 package gui;
 
-import models.CourseRegistration;
+import database.MySQLDatabase;
 import models.Student;
 import services.CourseService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
+import java.sql.ResultSet;
 
 /**
  * Panel showing student's enrolled courses
@@ -15,12 +15,14 @@ import java.util.List;
 public class StudentCoursesPanel extends JPanel {
     private Student student;
     private CourseService courseService;
+    private MySQLDatabase db;
     private JTable coursesTable;
     private DefaultTableModel tableModel;
 
     public StudentCoursesPanel(Student student, CourseService courseService) {
         this.student = student;
         this.courseService = courseService;
+        this.db = MySQLDatabase.getInstance();
         initializeUI();
         loadCourses();
     }
@@ -87,20 +89,46 @@ public class StudentCoursesPanel extends JPanel {
     private void loadCourses() {
         tableModel.setRowCount(0);
 
-        String academicYear = "2025/2026";
-        int semester = student.getSemester();
+        try {
+            // Ensure fresh connection
+            if (!db.isConnected()) {
+                db.connect();
+            }
 
-        List<CourseRegistration> registrations = courseService.getStudentRegistrations(
-                student.getStudentId(), academicYear, semester);
+            String academicYear = "2025/2026";
 
-        for (CourseRegistration reg : registrations) {
-            tableModel.addRow(new Object[] {
-                    reg.getCourseCode(),
-                    reg.getCourseName(),
-                    reg.getCredits(),
-                    reg.getStatus(),
-                    reg.getRegistrationId()
+            // Load registered courses directly from database
+            String query = "SELECT cr.registration_id, cr.status, c.course_code, c.course_name, c.credits " +
+                    "FROM course_registrations cr " +
+                    "JOIN courses c ON cr.course_id = c.course_id " +
+                    "WHERE cr.student_id = ? AND cr.academic_year = ? AND cr.status = 'REGISTERED' " +
+                    "ORDER BY c.course_code";
+
+            ResultSet rs = db.executePreparedSelect(query, new Object[] {
+                    student.getStudentId(),
+                    academicYear
             });
+
+            while (rs != null && rs.next()) {
+                tableModel.addRow(new Object[] {
+                        rs.getString("course_code"),
+                        rs.getString("course_name"),
+                        rs.getInt("credits"),
+                        rs.getString("status"),
+                        rs.getInt("registration_id")
+                });
+            }
+
+            // Close ResultSet properly
+            if (rs != null) {
+                rs.close();
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading courses: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -123,13 +151,21 @@ public class StudentCoursesPanel extends JPanel {
                 "Confirm Drop", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
+            // Debug output
+            System.out.println("DEBUG: Attempting to drop course:");
+            System.out.println("  Registration ID: " + registrationId);
+            System.out.println("  Student ID: " + student.getStudentId());
+            System.out.println("  Course Code: " + courseCode);
+
             boolean success = courseService.dropCourse(registrationId, student.getStudentId());
 
             if (success) {
                 JOptionPane.showMessageDialog(this,
                         "Course dropped successfully!",
                         "Success", JOptionPane.INFORMATION_MESSAGE);
-                loadCourses();
+
+                // Refresh the table immediately on EDT
+                SwingUtilities.invokeLater(() -> loadCourses());
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Failed to drop course!",
