@@ -30,7 +30,7 @@ public class ManageCoursesPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        String[] columns = { "ID", "Code", "Course Name", "Credits", "Department", "Year", "Semester" };
+        String[] columns = { "ID", "Code", "Course Name", "Credits", "Department", "Year", "Semester", "Lecturer" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -77,6 +77,13 @@ public class ManageCoursesPanel extends JPanel {
         deleteButton.setBorderPainted(false);
         deleteButton.addActionListener(e -> deleteSelectedCourse());
 
+        JButton assignButton = new JButton("Assign Lecturer");
+        assignButton.setBackground(new Color(155, 89, 182));
+        assignButton.setForeground(Color.WHITE);
+        assignButton.setFocusPainted(false);
+        assignButton.setBorderPainted(false);
+        assignButton.addActionListener(e -> showAssignLecturerDialog());
+
         JButton refreshButton = new JButton("Refresh");
         refreshButton.setBackground(new Color(52, 152, 219));
         refreshButton.setForeground(Color.WHITE);
@@ -87,6 +94,7 @@ public class ManageCoursesPanel extends JPanel {
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(assignButton);
         buttonPanel.add(refreshButton);
 
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -107,12 +115,22 @@ public class ManageCoursesPanel extends JPanel {
                 db.connect();
             }
 
-            String query = "SELECT course_id, course_code, course_name, credits, department, year_level, semester " +
-                    "FROM courses ORDER BY course_code";
+            String query = "SELECT c.course_id, c.course_code, c.course_name, c.credits, " +
+                    "c.department, c.year_level, c.semester, " +
+                    "CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.last_name, '')) as lecturer_name " +
+                    "FROM courses c " +
+                    "LEFT JOIN lecturers l ON c.lecturer_id = l.lecturer_id " +
+                    "LEFT JOIN persons p ON l.person_id = p.person_id " +
+                    "ORDER BY c.course_code";
 
             ResultSet rs = db.fetchData(query);
 
             while (rs != null && rs.next()) {
+                String lecturerName = rs.getString("lecturer_name");
+                if (lecturerName == null || lecturerName.trim().isEmpty()) {
+                    lecturerName = "Unassigned";
+                }
+
                 tableModel.addRow(new Object[] {
                         rs.getInt("course_id"),
                         rs.getString("course_code"),
@@ -120,7 +138,8 @@ public class ManageCoursesPanel extends JPanel {
                         rs.getInt("credits"),
                         rs.getString("department"),
                         rs.getInt("year_level"),
-                        rs.getInt("semester")
+                        rs.getInt("semester"),
+                        lecturerName
                 });
             }
 
@@ -503,5 +522,164 @@ public class ManageCoursesPanel extends JPanel {
             e.printStackTrace();
             db.disconnect();
         }
+    }
+
+    private void showAssignLecturerDialog() {
+        int selectedRow = coursesTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a course to assign a lecturer!",
+                    "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int courseId = (int) tableModel.getValueAt(selectedRow, 0);
+        String courseCode = (String) tableModel.getValueAt(selectedRow, 1);
+        String courseName = (String) tableModel.getValueAt(selectedRow, 2);
+        String currentLecturer = (String) tableModel.getValueAt(selectedRow, 7);
+
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this),
+                "Assign Lecturer", true);
+        dialog.setSize(500, 300);
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.setLayout(new BorderLayout());
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBackground(new Color(236, 240, 241));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+        JLabel courseLabel = new JLabel("Course: " + courseCode + " - " + courseName);
+        courseLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JLabel currentLabel = new JLabel("Current Lecturer: " + currentLecturer);
+        currentLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        infoPanel.add(courseLabel);
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        infoPanel.add(currentLabel);
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(new JLabel("Select Lecturer:"), gbc);
+
+        gbc.gridx = 1;
+        JComboBox<String> lecturerCombo = new JComboBox<>();
+        lecturerCombo.addItem("-- Unassign Lecturer --");
+
+        // Load all active lecturers
+        try {
+            if (!db.isConnected()) {
+                db.connect();
+            }
+
+            String query = "SELECT l.lecturer_id, CONCAT(p.first_name, ' ', p.last_name) as full_name, " +
+                    "l.department " +
+                    "FROM lecturers l " +
+                    "JOIN persons p ON l.person_id = p.person_id " +
+                    "WHERE l.status = 'ACTIVE' " +
+                    "ORDER BY p.first_name, p.last_name";
+
+            ResultSet rs = db.fetchData(query);
+
+            while (rs != null && rs.next()) {
+                int lecturerId = rs.getInt("lecturer_id");
+                String fullName = rs.getString("full_name");
+                String dept = rs.getString("department");
+
+                lecturerCombo.addItem(lecturerId + " - " + fullName + " (" + dept + ")");
+            }
+
+            if (rs != null) {
+                rs.close();
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(dialog,
+                    "Error loading lecturers: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        formPanel.add(lecturerCombo, gbc);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(Color.WHITE);
+
+        JButton assignButton = new JButton("Assign");
+        assignButton.setBackground(new Color(155, 89, 182));
+        assignButton.setForeground(Color.WHITE);
+        assignButton.setFocusPainted(false);
+        assignButton.addActionListener(e -> {
+            String selectedItem = (String) lecturerCombo.getSelectedItem();
+
+            try {
+                db.connect();
+
+                Integer lecturerId = null;
+
+                if (selectedItem != null && !selectedItem.startsWith("--")) {
+                    // Extract lecturer ID from the combo box item
+                    lecturerId = Integer.parseInt(selectedItem.split(" - ")[0]);
+                }
+
+                String updateQuery;
+                if (lecturerId == null) {
+                    // Unassign lecturer
+                    updateQuery = "UPDATE courses SET lecturer_id = NULL WHERE course_id = " + courseId;
+                } else {
+                    // Assign lecturer
+                    updateQuery = "UPDATE courses SET lecturer_id = " + lecturerId + " WHERE course_id = " + courseId;
+                }
+
+                int rowsAffected = db.executeUpdate(updateQuery);
+                db.disconnect();
+
+                if (rowsAffected > 0) {
+                    dialog.dispose();
+                    JOptionPane.showMessageDialog(ManageCoursesPanel.this,
+                            lecturerId == null ? "Lecturer unassigned successfully!"
+                                    : "Lecturer assigned successfully!",
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                    // Refresh the table
+                    SwingUtilities.invokeLater(() -> loadCourses());
+                } else {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Failed to assign lecturer!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog,
+                        "Error: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+                db.disconnect();
+            }
+        });
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBackground(new Color(149, 165, 166));
+        cancelButton.setForeground(Color.WHITE);
+        cancelButton.setFocusPainted(false);
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        buttonPanel.add(assignButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.add(infoPanel, BorderLayout.NORTH);
+        dialog.add(formPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setVisible(true);
     }
 }
