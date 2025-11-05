@@ -168,26 +168,48 @@ public class CourseRegistrationPanel extends JPanel {
 
         String courseCode = (String) tableModel.getValueAt(selectedRow, 0);
         String courseName = (String) tableModel.getValueAt(selectedRow, 1);
+        int credits = (int) tableModel.getValueAt(selectedRow, 2);
+        int yearLevel = (int) tableModel.getValueAt(selectedRow, 3);
+        int courseSemester = (int) tableModel.getValueAt(selectedRow, 4);
         int courseId = (int) tableModel.getValueAt(selectedRow, 7);
 
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Register for " + courseCode + " - " + courseName + "?",
+                "Register for " + courseCode + " - " + courseName + "?\n\n" +
+                        "Year: " + yearLevel + ", Semester: " + courseSemester + ", Credits: " + credits,
                 "Confirm Registration", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
             String academicYear = "2025/2026";
-            int semester = student.getSemester();
+
+            // Debug output
+            System.out.println("DEBUG: Attempting registration:");
+            System.out.println("  Student ID: " + student.getStudentId());
+            System.out.println("  Course ID: " + courseId);
+            System.out.println("  Course Code: " + courseCode);
+            System.out.println("  Academic Year: " + academicYear);
+            System.out.println("  Course Semester: " + courseSemester);
 
             boolean success = courseService.registerCourse(
-                    student.getStudentId(), courseId, academicYear, semester);
+                    student.getStudentId(), courseId, academicYear, courseSemester);
 
             if (success) {
                 JOptionPane.showMessageDialog(this,
-                        "Successfully registered for " + courseCode + "!",
+                        "Successfully registered for " + courseCode + "!\n\n" +
+                                "Course: " + courseName + "\n" +
+                                "Year: " + yearLevel + ", Semester: " + courseSemester + "\n" +
+                                "Credits: " + credits,
                         "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                // Refresh the available courses list
+                loadAvailableCourses();
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Registration failed! You may already be registered or the course is full.",
+                        "Registration failed!\n\n" +
+                                "Possible reasons:\n" +
+                                "• You may already be registered for this course\n" +
+                                "• The course may be full\n" +
+                                "• The course may be inactive\n\n" +
+                                "Check the console for detailed error messages.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

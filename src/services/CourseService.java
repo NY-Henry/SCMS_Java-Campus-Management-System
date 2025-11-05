@@ -32,16 +32,12 @@ public class CourseService {
                 throw new IllegalArgumentException("Course not found or inactive!");
             }
 
-            // Check for duplicate registration
+            // Check for duplicate registration (only check: student can only register once)
             if (isAlreadyRegistered(studentId, courseId, academicYear, semester)) {
                 throw new IllegalStateException("Already registered for this course!");
             }
 
-            // Check course capacity
-            int currentEnrollment = getCurrentEnrollment(courseId, academicYear, semester);
-            if (currentEnrollment >= course.getMaxCapacity()) {
-                throw new IllegalStateException("Course is full! Maximum capacity reached.");
-            }
+            // No capacity check - allow unlimited registrations
 
             // Register the student
             String query = "INSERT INTO course_registrations (student_id, course_id, academic_year, semester, status) "
@@ -307,18 +303,6 @@ public class CourseService {
             return rs.getInt("count") > 0;
         }
         return false;
-    }
-
-    private int getCurrentEnrollment(int courseId, String academicYear, int semester) throws SQLException {
-        String query = "SELECT COUNT(*) as count FROM course_registrations " +
-                "WHERE course_id = ? AND academic_year = ? AND semester = ? AND status = 'REGISTERED'";
-
-        ResultSet rs = db.executePreparedSelect(query, new Object[] { courseId, academicYear, semester });
-
-        if (rs != null && rs.next()) {
-            return rs.getInt("count");
-        }
-        return 0;
     }
 
     private Course mapResultSetToCourse(ResultSet rs) throws SQLException {
