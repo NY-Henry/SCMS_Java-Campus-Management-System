@@ -285,37 +285,7 @@ public class StudentDashboard extends JFrame {
      */
     private void showFeeBalance() {
         contentPanel.removeAll();
-
-        JPanel feePanel = new JPanel();
-        feePanel.setLayout(new BoxLayout(feePanel, BoxLayout.Y_AXIS));
-        feePanel.setBackground(new Color(236, 240, 241));
-
-        JLabel title = new JLabel("Fee Balance Information");
-        title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JPanel balanceCard = new JPanel();
-        balanceCard.setLayout(new BoxLayout(balanceCard, BoxLayout.Y_AXIS));
-        balanceCard.setBackground(Color.WHITE);
-        balanceCard.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        balanceCard.setMaximumSize(new Dimension(600, 200));
-
-        JLabel balanceLabel = new JLabel("Current Balance");
-        balanceLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-
-        JLabel amountLabel = new JLabel(String.format("UGX %.2f", student.getFeeBalance()));
-        amountLabel.setFont(new Font("Arial", Font.BOLD, 36));
-        amountLabel.setForeground(student.getFeeBalance() > 0 ? new Color(231, 76, 60) : new Color(46, 204, 113));
-
-        balanceCard.add(balanceLabel);
-        balanceCard.add(Box.createRigidArea(new Dimension(0, 15)));
-        balanceCard.add(amountLabel);
-
-        feePanel.add(title);
-        feePanel.add(Box.createRigidArea(new Dimension(0, 30)));
-        feePanel.add(balanceCard);
-
-        contentPanel.add(feePanel, BorderLayout.NORTH);
+        contentPanel.add(new StudentFeeBalancePanel(student));
         contentPanel.revalidate();
         contentPanel.repaint();
     }

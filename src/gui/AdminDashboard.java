@@ -3,6 +3,7 @@ package gui;
 import database.MySQLDatabase;
 import models.Admin;
 import services.CourseService;
+import services.PaymentService;
 import utils.SessionManager;
 
 import javax.swing.*;
@@ -16,11 +17,13 @@ public class AdminDashboard extends JFrame {
     private Admin admin;
     private JPanel contentPanel;
     private CourseService courseService;
+    private PaymentService paymentService;
     private MySQLDatabase db;
 
     public AdminDashboard(Admin admin) {
         this.admin = admin;
         this.courseService = new CourseService();
+        this.paymentService = new PaymentService();
         this.db = MySQLDatabase.getInstance();
         initializeUI();
     }
@@ -261,14 +264,7 @@ public class AdminDashboard extends JFrame {
 
     private void showPayments() {
         contentPanel.removeAll();
-
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(236, 240, 241));
-        JLabel label = new JLabel("Payment Records - Feature Coming Soon");
-        label.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(label);
-
-        contentPanel.add(panel);
+        contentPanel.add(new ManagePaymentsPanel(admin, paymentService));
         contentPanel.revalidate();
         contentPanel.repaint();
     }
