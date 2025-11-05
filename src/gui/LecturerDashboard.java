@@ -100,6 +100,7 @@ public class LecturerDashboard extends JFrame {
         addMenuItem(sidebar, "Class Lists", e -> showClassLists());
         addMenuItem(sidebar, "Upload Grades", e -> showUploadGrades());
         addMenuItem(sidebar, "Post Announcement", e -> showPostAnnouncement());
+        addMenuItem(sidebar, "My Announcements", e -> showMyAnnouncements());
         addMenuItem(sidebar, "View Announcements", e -> showAnnouncements());
         addMenuItem(sidebar, "My Profile", e -> showProfile());
 
@@ -218,9 +219,16 @@ public class LecturerDashboard extends JFrame {
         contentPanel.repaint();
     }
 
+    private void showMyAnnouncements() {
+        contentPanel.removeAll();
+        contentPanel.add(new MyAnnouncementsPanel(db, lecturer));
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
     private void showAnnouncements() {
         contentPanel.removeAll();
-        contentPanel.add(new AnnouncementsPanel(db, "LECTURER"));
+        contentPanel.add(new AnnouncementsPanel(db, "LECTURER", lecturer.getUserId()));
         contentPanel.revalidate();
         contentPanel.repaint();
     }
