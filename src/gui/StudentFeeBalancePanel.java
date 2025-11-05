@@ -80,7 +80,7 @@ public class StudentFeeBalancePanel extends JPanel {
         paymentsTable.setFont(new Font("Arial", Font.PLAIN, 13));
         paymentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         paymentsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        paymentsTable.getTableHeader().setForeground(Color.WHITE);
+        paymentsTable.getTableHeader().setForeground(Color.BLACK);
         paymentsTable.setSelectionBackground(new Color(52, 152, 219));
         paymentsTable.setSelectionForeground(Color.WHITE);
 

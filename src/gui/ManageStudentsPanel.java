@@ -26,7 +26,7 @@ public class ManageStudentsPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        String[] columns = { "ID", "Reg Number", "Full Name", "Program", "Year", "GPA", "Status" };
+        String[] columns = { "ID", "Reg Number", "Full Name", "Program", "Year", "GPA", "Fee Balance", "Status" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -80,10 +80,18 @@ public class ManageStudentsPanel extends JPanel {
         deleteButton.setBorderPainted(false);
         deleteButton.addActionListener(e -> deleteSelectedStudent());
 
+        JButton updateFeeButton = new JButton("Update Fee Balance");
+        updateFeeButton.setBackground(new Color(155, 89, 182));
+        updateFeeButton.setForeground(Color.WHITE);
+        updateFeeButton.setFocusPainted(false);
+        updateFeeButton.setBorderPainted(false);
+        updateFeeButton.addActionListener(e -> showUpdateFeeBalanceDialog());
+
         buttonPanel.add(refreshButton);
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(updateFeeButton);
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(new Color(236, 240, 241));
@@ -105,7 +113,7 @@ public class ManageStudentsPanel extends JPanel {
 
             String query = "SELECT s.student_id, s.registration_number, " +
                     "CONCAT(p.first_name, ' ', p.last_name) as full_name, " +
-                    "s.program, s.year_of_study, s.gpa, s.status " +
+                    "s.program, s.year_of_study, s.gpa, s.fee_balance, s.status " +
                     "FROM students s " +
                     "JOIN persons p ON s.person_id = p.person_id " +
                     "ORDER BY s.registration_number";
@@ -120,6 +128,7 @@ public class ManageStudentsPanel extends JPanel {
                         rs.getString("program"),
                         rs.getInt("year_of_study"),
                         String.format("%.2f", rs.getDouble("gpa")),
+                        String.format("%.2f", rs.getDouble("fee_balance")),
                         rs.getString("status")
                 });
             }
@@ -777,6 +786,201 @@ public class ManageStudentsPanel extends JPanel {
                     "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             db.disconnect();
+        }
+    }
+
+    private void showUpdateFeeBalanceDialog() {
+        int selectedRow = studentsTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a student to update fee balance.",
+                    "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get student details
+        int studentId = (int) tableModel.getValueAt(selectedRow, 0);
+        String regNumber = (String) tableModel.getValueAt(selectedRow, 1);
+        String fullName = (String) tableModel.getValueAt(selectedRow, 2);
+
+        try {
+            if (!db.isConnected()) {
+                db.connect();
+            }
+
+            // Fetch current fee balance
+            String query = "SELECT fee_balance FROM students WHERE student_id = ?";
+            ResultSet rs = db.executePreparedSelect(query, new Object[] { studentId });
+
+            if (rs == null || !rs.next()) {
+                JOptionPane.showMessageDialog(this,
+                        "Error: Could not fetch student details.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double currentBalance = rs.getDouble("fee_balance");
+            rs.close();
+
+            // Create dialog
+            JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                    "Update Fee Balance", true);
+            dialog.setSize(500, 300);
+            dialog.setLocationRelativeTo(this);
+            dialog.setLayout(new BorderLayout());
+
+            // Title Panel
+            JPanel titlePanel = new JPanel();
+            titlePanel.setBackground(new Color(155, 89, 182));
+            titlePanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
+            JLabel titleLabel = new JLabel("Update Student Fee Balance");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            titleLabel.setForeground(Color.WHITE);
+            titlePanel.add(titleLabel);
+
+            // Form Panel
+            JPanel formPanel = new JPanel();
+            formPanel.setLayout(new GridBagLayout());
+            formPanel.setBackground(Color.WHITE);
+            formPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(10, 5, 10, 5);
+
+            int row = 0;
+
+            // Student Info
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.weightx = 0.3;
+            formPanel.add(new JLabel("Student:"), gbc);
+
+            gbc.gridx = 1;
+            gbc.weightx = 0.7;
+            JLabel studentLabel = new JLabel(regNumber + " - " + fullName);
+            studentLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            formPanel.add(studentLabel, gbc);
+
+            row++;
+
+            // Current Balance
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.weightx = 0.3;
+            formPanel.add(new JLabel("Current Balance:"), gbc);
+
+            gbc.gridx = 1;
+            gbc.weightx = 0.7;
+            JLabel currentBalanceLabel = new JLabel(String.format("UGX %.2f", currentBalance));
+            currentBalanceLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            currentBalanceLabel.setForeground(currentBalance > 0 ? new Color(231, 76, 60) : new Color(46, 204, 113));
+            formPanel.add(currentBalanceLabel, gbc);
+
+            row++;
+
+            // New Balance
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.weightx = 0.3;
+            formPanel.add(new JLabel("New Balance (UGX):"), gbc);
+
+            gbc.gridx = 1;
+            gbc.weightx = 0.7;
+            JTextField newBalanceField = new JTextField(String.format("%.2f", currentBalance));
+            newBalanceField.setPreferredSize(new Dimension(300, 30));
+            newBalanceField.setFont(new Font("Arial", Font.PLAIN, 14));
+            formPanel.add(newBalanceField, gbc);
+
+            // Button Panel
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton updateBtn = new JButton("Update Balance");
+            updateBtn.setBackground(new Color(46, 204, 113));
+            updateBtn.setForeground(Color.WHITE);
+            updateBtn.setFont(new Font("Arial", Font.BOLD, 14));
+            updateBtn.setFocusPainted(false);
+            updateBtn.setBorderPainted(false);
+            updateBtn.addActionListener(e -> {
+                String newBalanceStr = newBalanceField.getText().trim();
+
+                if (newBalanceStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Please enter a balance amount.",
+                            "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                double newBalance;
+                try {
+                    newBalance = Double.parseDouble(newBalanceStr);
+                    if (newBalance < 0) {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Please enter a valid non-negative amount.",
+                            "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // Confirm update
+                int confirm = JOptionPane.showConfirmDialog(dialog,
+                        String.format("Update fee balance from UGX %.2f to UGX %.2f?", currentBalance, newBalance),
+                        "Confirm Update",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        String updateQuery = "UPDATE students SET fee_balance = ? WHERE student_id = ?";
+                        boolean success = db.executePreparedQuery(updateQuery,
+                                new Object[] { newBalance, studentId });
+
+                        if (success) {
+                            JOptionPane.showMessageDialog(dialog,
+                                    "Fee balance updated successfully!",
+                                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                            loadStudents(); // Refresh table
+                            dialog.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(dialog,
+                                    "Failed to update fee balance.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(dialog,
+                                "Error updating fee balance: " + ex.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+            JButton cancelBtn = new JButton("Cancel");
+            cancelBtn.setBackground(new Color(149, 165, 166));
+            cancelBtn.setForeground(Color.WHITE);
+            cancelBtn.setFont(new Font("Arial", Font.BOLD, 14));
+            cancelBtn.setFocusPainted(false);
+            cancelBtn.setBorderPainted(false);
+            cancelBtn.addActionListener(e -> dialog.dispose());
+
+            buttonPanel.add(updateBtn);
+            buttonPanel.add(cancelBtn);
+
+            // Layout
+            dialog.add(titlePanel, BorderLayout.NORTH);
+            dialog.add(formPanel, BorderLayout.CENTER);
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+            dialog.setVisible(true);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading student details: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 }
