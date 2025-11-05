@@ -1,5 +1,6 @@
 package gui;
 
+import database.MySQLDatabase;
 import models.Student;
 import services.CourseService;
 import services.GradeService;
@@ -18,9 +19,11 @@ public class StudentDashboard extends JFrame {
     private JLabel welcomeLabel;
     private CourseService courseService;
     private GradeService gradeService;
+    private MySQLDatabase db;
 
     public StudentDashboard(Student student) {
         this.student = student;
+        this.db = MySQLDatabase.getInstance();
         this.courseService = new CourseService();
         this.gradeService = new GradeService();
         initializeUI();
@@ -305,7 +308,7 @@ public class StudentDashboard extends JFrame {
      */
     private void showAnnouncements() {
         contentPanel.removeAll();
-        contentPanel.add(new AnnouncementsPanel("STUDENT"));
+        contentPanel.add(new AnnouncementsPanel(db, "STUDENT"));
         contentPanel.revalidate();
         contentPanel.repaint();
     }

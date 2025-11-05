@@ -1,5 +1,6 @@
 package gui;
 
+import database.MySQLDatabase;
 import models.Lecturer;
 import services.CourseService;
 import services.GradeService;
@@ -16,9 +17,11 @@ public class LecturerDashboard extends JFrame {
     private JPanel contentPanel;
     private CourseService courseService;
     private GradeService gradeService;
+    private MySQLDatabase db;
 
     public LecturerDashboard(Lecturer lecturer) {
         this.lecturer = lecturer;
+        this.db = MySQLDatabase.getInstance();
         this.courseService = new CourseService();
         this.gradeService = new GradeService();
         initializeUI();
@@ -97,6 +100,7 @@ public class LecturerDashboard extends JFrame {
         addMenuItem(sidebar, "Class Lists", e -> showClassLists());
         addMenuItem(sidebar, "Upload Grades", e -> showUploadGrades());
         addMenuItem(sidebar, "Post Announcement", e -> showPostAnnouncement());
+        addMenuItem(sidebar, "View Announcements", e -> showAnnouncements());
         addMenuItem(sidebar, "My Profile", e -> showProfile());
 
         sidebar.add(Box.createVerticalGlue());
@@ -209,14 +213,14 @@ public class LecturerDashboard extends JFrame {
 
     private void showPostAnnouncement() {
         contentPanel.removeAll();
+        contentPanel.add(new PostAnnouncementPanel(db, lecturer));
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
 
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(236, 240, 241));
-        JLabel label = new JLabel("Post Announcement - Feature Coming Soon");
-        label.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(label);
-
-        contentPanel.add(panel);
+    private void showAnnouncements() {
+        contentPanel.removeAll();
+        contentPanel.add(new AnnouncementsPanel(db, "LECTURER"));
         contentPanel.revalidate();
         contentPanel.repaint();
     }
