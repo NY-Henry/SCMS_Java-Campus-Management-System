@@ -1,6 +1,6 @@
 package gui;
 
-import models.CourseRegistration;
+import database.MySQLDatabase;
 import models.Course;
 import models.Lecturer;
 import services.CourseService;
@@ -8,11 +8,13 @@ import services.CourseService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.ResultSet;
 import java.util.List;
 
 public class ClassListPanel extends JPanel {
     private Lecturer lecturer;
     private CourseService courseService;
+    private MySQLDatabase db;
     private JComboBox<String> courseCombo;
     private JTable studentsTable;
     private DefaultTableModel tableModel;
@@ -21,6 +23,7 @@ public class ClassListPanel extends JPanel {
     public ClassListPanel(Lecturer lecturer, CourseService courseService) {
         this.lecturer = lecturer;
         this.courseService = courseService;
+        this.db = MySQLDatabase.getInstance();
         initializeUI();
     }
 
@@ -44,7 +47,11 @@ public class ClassListPanel extends JPanel {
 
         JButton viewButton = new JButton("View Students");
         viewButton.setBackground(new Color(52, 152, 219));
-        viewButton.setForeground(Color.WHITE);
+        viewButton.setForeground(Color.BLACK);
+        viewButton.setFont(new Font("Arial", Font.BOLD, 14));
+        viewButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        viewButton.setPreferredSize(new Dimension(120, 35));
+        viewButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         viewButton.setFocusPainted(false);
         viewButton.addActionListener(e -> loadStudents());
 
@@ -66,7 +73,7 @@ public class ClassListPanel extends JPanel {
         studentsTable.setFont(new Font("Arial", Font.PLAIN, 13));
         studentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         studentsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        studentsTable.getTableHeader().setForeground(Color.WHITE);
+        studentsTable.getTableHeader().setForeground(Color.BLACK);
 
         JScrollPane scrollPane = new JScrollPane(studentsTable);
 
@@ -95,19 +102,74 @@ public class ClassListPanel extends JPanel {
         tableModel.setRowCount(0);
 
         int selectedIndex = courseCombo.getSelectedIndex();
-        if (selectedIndex < 0 || selectedIndex >= courses.size())
+        if (selectedIndex < 0 || selectedIndex >= courses.size()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a course!",
+                    "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
+        }
 
         Course selectedCourse = courses.get(selectedIndex);
-        List<CourseRegistration> enrollments = courseService.getCourseEnrollments(
-                selectedCourse.getCourseId(), "2025/2026", 1);
 
-        for (CourseRegistration enrollment : enrollments) {
-            tableModel.addRow(new Object[] {
-                    enrollment.getRegistrationNumber(),
-                    enrollment.getStudentName(),
-                    enrollment.getStatus()
+        try {
+            // Ensure fresh connection
+            if (!db.isConnected()) {
+                db.connect();
+            }
+
+            // Use the course's actual semester, not hardcoded
+            String academicYear = "2025/2026";
+
+            // Debug output
+            System.out.println("DEBUG: Loading students for course:");
+            System.out.println("  Course ID: " + selectedCourse.getCourseId());
+            System.out.println("  Course Code: " + selectedCourse.getCourseCode());
+            System.out.println("  Course Semester: " + selectedCourse.getSemester());
+            System.out.println("  Academic Year: " + academicYear);
+
+            String query = "SELECT cr.registration_id, cr.student_id, cr.status, " +
+                    "s.registration_number, " +
+                    "CONCAT(p.first_name, ' ', p.last_name) as student_name " +
+                    "FROM course_registrations cr " +
+                    "JOIN students s ON cr.student_id = s.student_id " +
+                    "JOIN persons p ON s.person_id = p.person_id " +
+                    "WHERE cr.course_id = ? AND cr.academic_year = ? " +
+                    "AND cr.status = 'REGISTERED' " +
+                    "ORDER BY student_name";
+
+            ResultSet rs = db.executePreparedSelect(query, new Object[] {
+                    selectedCourse.getCourseId(),
+                    academicYear
             });
+
+            int count = 0;
+            while (rs != null && rs.next()) {
+                tableModel.addRow(new Object[] {
+                        rs.getString("registration_number"),
+                        rs.getString("student_name"),
+                        rs.getString("status")
+                });
+                count++;
+            }
+
+            System.out.println("DEBUG: Loaded " + count + " students");
+
+            // Close ResultSet properly
+            if (rs != null) {
+                rs.close();
+            }
+
+            if (count == 0) {
+                JOptionPane.showMessageDialog(this,
+                        "No students registered for this course yet.",
+                        "No Students", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading students: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 }
