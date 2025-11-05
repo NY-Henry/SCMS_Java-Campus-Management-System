@@ -250,14 +250,7 @@ public class AdminDashboard extends JFrame {
 
     private void showReports() {
         contentPanel.removeAll();
-
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(236, 240, 241));
-        JLabel label = new JLabel("Reports - Feature Coming Soon");
-        label.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(label);
-
-        contentPanel.add(panel);
+        contentPanel.add(new ReportsPanel(db, paymentService));
         contentPanel.revalidate();
         contentPanel.repaint();
     }
