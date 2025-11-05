@@ -193,10 +193,22 @@ public class LecturerDashboard extends JFrame {
     }
 
     private void showUploadGrades() {
-        contentPanel.removeAll();
-        contentPanel.add(new UploadGradesPanel(lecturer, courseService, gradeService));
-        contentPanel.revalidate();
-        contentPanel.repaint();
+        try {
+            contentPanel.removeAll();
+            System.out.println("DEBUG: Creating UploadGradesPanel...");
+            UploadGradesPanel uploadPanel = new UploadGradesPanel(lecturer, courseService, gradeService);
+            System.out.println("DEBUG: UploadGradesPanel created successfully");
+            contentPanel.add(uploadPanel);
+            contentPanel.revalidate();
+            contentPanel.repaint();
+            System.out.println("DEBUG: Panel added and refreshed");
+        } catch (Exception e) {
+            System.err.println("ERROR: Failed to show Upload Grades panel");
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error loading Upload Grades panel: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void showPostAnnouncement() {

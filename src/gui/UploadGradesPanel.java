@@ -1,5 +1,6 @@
 package gui;
 
+import database.MySQLDatabase;
 import models.Course;
 import models.CourseRegistration;
 import models.Lecturer;
@@ -8,12 +9,15 @@ import services.GradeService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UploadGradesPanel extends JPanel {
     private Lecturer lecturer;
     private CourseService courseService;
     private GradeService gradeService;
+    private MySQLDatabase db;
     private JComboBox<String> courseCombo;
     private JComboBox<String> studentCombo;
     private JTextField courseworkField, examField;
@@ -25,6 +29,7 @@ public class UploadGradesPanel extends JPanel {
         this.lecturer = lecturer;
         this.courseService = courseService;
         this.gradeService = gradeService;
+        this.db = MySQLDatabase.getInstance();
         initializeUI();
     }
 
@@ -56,8 +61,6 @@ public class UploadGradesPanel extends JPanel {
         gbc.gridx = 1;
         courseCombo = new JComboBox<>();
         courseCombo.setPreferredSize(new Dimension(300, 30));
-        courseCombo.addActionListener(e -> loadStudentsForCourse());
-        loadCourses();
         formPanel.add(courseCombo, gbc);
 
         // Student selection
@@ -69,6 +72,10 @@ public class UploadGradesPanel extends JPanel {
         studentCombo = new JComboBox<>();
         studentCombo.setPreferredSize(new Dimension(300, 30));
         formPanel.add(studentCombo, gbc);
+
+        // Load courses and add listener AFTER both combos are initialized
+        loadCourses();
+        courseCombo.addActionListener(e -> loadStudentsForCourse());
 
         // Coursework marks
         gbc.gridx = 0;
@@ -138,17 +145,73 @@ public class UploadGradesPanel extends JPanel {
 
     private void loadStudentsForCourse() {
         studentCombo.removeAllItems();
+        students = new ArrayList<>();
 
         int selectedIndex = courseCombo.getSelectedIndex();
-        if (selectedIndex < 0 || selectedIndex >= courses.size())
+        if (selectedIndex < 0 || selectedIndex >= courses.size()) {
             return;
+        }
 
         Course selectedCourse = courses.get(selectedIndex);
-        students = courseService.getCourseEnrollments(
-                selectedCourse.getCourseId(), "2025/2026", 1);
 
-        for (CourseRegistration student : students) {
-            studentCombo.addItem(student.getRegistrationNumber() + " - " + student.getStudentName());
+        try {
+            // Ensure fresh connection
+            if (!db.isConnected()) {
+                db.connect();
+            }
+
+            String academicYear = "2025/2026";
+
+            // Debug output
+            System.out.println("DEBUG UploadGrades: Loading students for course:");
+            System.out.println("  Course ID: " + selectedCourse.getCourseId());
+            System.out.println("  Course Code: " + selectedCourse.getCourseCode());
+
+            String query = "SELECT cr.registration_id, cr.student_id, cr.status, " +
+                    "s.registration_number, " +
+                    "CONCAT(p.first_name, ' ', p.last_name) as student_name " +
+                    "FROM course_registrations cr " +
+                    "JOIN students s ON cr.student_id = s.student_id " +
+                    "JOIN persons p ON s.person_id = p.person_id " +
+                    "WHERE cr.course_id = ? AND cr.academic_year = ? " +
+                    "AND cr.status = 'REGISTERED' " +
+                    "ORDER BY student_name";
+
+            ResultSet rs = db.executePreparedSelect(query, new Object[] {
+                    selectedCourse.getCourseId(),
+                    academicYear
+            });
+
+            int count = 0;
+            while (rs != null && rs.next()) {
+                CourseRegistration enrollment = new CourseRegistration();
+                enrollment.setRegistrationId(rs.getInt("registration_id"));
+                enrollment.setStudentId(rs.getInt("student_id"));
+                enrollment.setStudentName(rs.getString("student_name"));
+                enrollment.setRegistrationNumber(rs.getString("registration_number"));
+                enrollment.setStatus(rs.getString("status"));
+
+                students.add(enrollment);
+                studentCombo.addItem(enrollment.getRegistrationNumber() + " - " + enrollment.getStudentName());
+                count++;
+            }
+
+            System.out.println("DEBUG: Loaded " + count + " students");
+
+            // Close ResultSet properly
+            if (rs != null) {
+                rs.close();
+            }
+
+            if (count == 0) {
+                studentCombo.addItem("-- No students registered --");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading students: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
