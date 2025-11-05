@@ -6,6 +6,7 @@ import models.Lecturer;
 import models.Person;
 import models.Student;
 import services.AuthenticationService;
+import services.LogService;
 import utils.SessionManager;
 
 import javax.swing.*;
@@ -23,6 +24,7 @@ public class LoginForm extends JFrame {
     private JButton loginButton;
     private JButton registerButton;
     private AuthenticationService authService;
+    private LogService logService;
 
     public LoginForm() {
         // Initialize database connection
@@ -35,6 +37,7 @@ public class LoginForm extends JFrame {
         }
 
         authService = new AuthenticationService();
+        logService = new LogService();
         initializeUI();
     }
 
@@ -209,6 +212,9 @@ public class LoginForm extends JFrame {
                     Person user = get();
 
                     if (user != null) {
+                        // Log successful login
+                        logService.logLogin(user.getUserId(), username, user.getRole());
+                        
                         // Store user in session
                         SessionManager.getInstance().setCurrentUser(user);
 
@@ -219,6 +225,9 @@ public class LoginForm extends JFrame {
                         dispose();
 
                     } else {
+                        // Log failed login attempt
+                        logService.logFailedLogin(username);
+                        
                         JOptionPane.showMessageDialog(LoginForm.this,
                                 "Invalid username or password!",
                                 "Login Failed", JOptionPane.ERROR_MESSAGE);

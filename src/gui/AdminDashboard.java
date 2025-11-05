@@ -3,6 +3,7 @@ package gui;
 import database.MySQLDatabase;
 import models.Admin;
 import services.CourseService;
+import services.LogService;
 import services.PaymentService;
 import utils.SessionManager;
 
@@ -18,11 +19,13 @@ public class AdminDashboard extends JFrame {
     private JPanel contentPanel;
     private CourseService courseService;
     private PaymentService paymentService;
+    private LogService logService;
     private MySQLDatabase db;
 
     public AdminDashboard(Admin admin) {
         this.admin = admin;
         this.courseService = new CourseService();
+        this.logService = new LogService();
         this.paymentService = new PaymentService();
         this.db = MySQLDatabase.getInstance();
         initializeUI();
@@ -264,14 +267,7 @@ public class AdminDashboard extends JFrame {
 
     private void showLogs() {
         contentPanel.removeAll();
-
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(236, 240, 241));
-        JLabel label = new JLabel("System Logs - Feature Coming Soon");
-        label.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(label);
-
-        contentPanel.add(panel);
+        contentPanel.add(new SystemLogsPanel(db));
         contentPanel.revalidate();
         contentPanel.repaint();
     }
@@ -283,6 +279,9 @@ public class AdminDashboard extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
+            // Log the logout action
+            logService.logLogout(admin.getUserId(), admin.getFullName(), "ADMIN");
+            
             SessionManager.getInstance().logout();
             dispose();
             new LoginForm().setVisible(true);
