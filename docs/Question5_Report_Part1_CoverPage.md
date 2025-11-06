@@ -1,4 +1,5 @@
 # SMART CAMPUS MANAGEMENT SYSTEM (SCMS)
+
 ## Project Report - Cover Page
 
 ---
@@ -6,6 +7,7 @@
 <div align="center">
 
 # SMART CAMPUS MANAGEMENT SYSTEM
+
 ## (SCMS)
 
 ### A Java-Based Desktop Application for Campus Management
@@ -13,10 +15,10 @@
 ---
 
 **Course:** Object-Oriented Programming (Java)  
-**Course Code:** BIT 2104 / BCS 2102  
+**Course Code:** BIT 2104 / BCS 2102
 
 **Academic Year:** 2025/2026  
-**Semester:** I  
+**Semester:** I
 
 **Examination Period:** November - December 2025
 
@@ -50,22 +52,22 @@ All sources of information have been duly acknowledged.
 
 **Group Members:**
 
-| Name | Registration Number | Signature | Date |
-|------|---------------------|-----------|------|
-| [Name 1] | [Reg No] | _________ | _____ |
-| [Name 2] | [Reg No] | _________ | _____ |
-| [Name 3] | [Reg No] | _________ | _____ |
-| [Name 4] | [Reg No] | _________ | _____ |
+| Name     | Registration Number | Signature  | Date   |
+| -------- | ------------------- | ---------- | ------ |
+| [Name 1] | [Reg No]            | ****\_**** | **\_** |
+| [Name 2] | [Reg No]            | ****\_**** | **\_** |
+| [Name 3] | [Reg No]            | ****\_**** | **\_** |
+| [Name 4] | [Reg No]            | ****\_**** | **\_** |
 
 ---
 
 **Supervisor/Lecturer Approval:**
 
-Name: _______________________________
+Name: **************\_\_\_**************
 
-Signature: ___________________________
+Signature: ************\_\_\_************
 
-Date: _______________________________
+Date: **************\_\_\_**************
 
 ---
 

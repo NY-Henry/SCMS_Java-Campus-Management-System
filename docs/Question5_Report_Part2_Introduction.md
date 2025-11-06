@@ -1,4 +1,5 @@
 # SMART CAMPUS MANAGEMENT SYSTEM (SCMS)
+
 ## Part 2: Introduction and System Objectives
 
 ---
@@ -37,6 +38,7 @@ The university's existing system suffers from several limitations:
 The SCMS covers the following functional areas:
 
 #### Student Management
+
 - Student registration and profile management
 - Course enrollment and withdrawal
 - Grade viewing and GPA tracking
@@ -44,6 +46,7 @@ The SCMS covers the following functional areas:
 - Announcement viewing
 
 #### Lecturer Management
+
 - Class list viewing
 - Grade uploading and management
 - Attendance recording
@@ -51,6 +54,7 @@ The SCMS covers the following functional areas:
 - Course management
 
 #### Administrative Management
+
 - User account management (students, lecturers)
 - System reports generation
 - Payment processing
@@ -73,23 +77,27 @@ The SCMS covers the following functional areas:
 ### 2.1 Primary Objectives
 
 #### 2.1.1 Centralized Information Management
+
 - Create a single, unified platform for all campus management operations
 - Eliminate data silos and ensure information consistency
 - Provide real-time access to academic and administrative data
 
 #### 2.1.2 Automation of Manual Processes
+
 - Automate course registration process
 - Streamline grade submission and calculation
 - Digital announcement distribution
 - Automated GPA computation
 
 #### 2.1.3 Enhanced User Experience
+
 - Intuitive, minimalistic user interface
 - Role-based access control
 - Quick access to frequently used features
 - Responsive and user-friendly design
 
 #### 2.1.4 Data Integrity and Security
+
 - Implement robust exception handling
 - Secure authentication and authorization
 - Data validation at all input points
@@ -98,6 +106,7 @@ The SCMS covers the following functional areas:
 ### 2.2 Specific Objectives
 
 #### For Students:
+
 1. **Easy Course Registration**: Register for courses with real-time capacity checking
 2. **Grade Access**: View grades and calculated GPA immediately after posting
 3. **Fee Transparency**: Monitor fee balances and payment history
@@ -105,6 +114,7 @@ The SCMS covers the following functional areas:
 5. **Profile Management**: Update personal information easily
 
 #### For Lecturers:
+
 1. **Efficient Grade Management**: Upload grades with automatic calculation
 2. **Class Management**: View enrolled students and track attendance
 3. **Communication**: Post announcements to students instantly
@@ -112,6 +122,7 @@ The SCMS covers the following functional areas:
 5. **Student Information**: Access student details for academic advising
 
 #### For Administrators:
+
 1. **User Management**: Create and manage user accounts efficiently
 2. **System Monitoring**: Track system usage and generate reports
 3. **Payment Processing**: Record and track student payments
@@ -121,24 +132,28 @@ The SCMS covers the following functional areas:
 ### 2.3 Technical Objectives
 
 #### 2.3.1 Object-Oriented Design
+
 - Demonstrate inheritance, encapsulation, polymorphism, and abstraction
 - Create maintainable and extensible code structure
 - Follow SOLID principles and design patterns
 - Clear separation of concerns (MVC-like architecture)
 
 #### 2.3.2 Database Integration
+
 - Implement comprehensive CRUD operations
 - Use prepared statements to prevent SQL injection
 - Efficient query optimization
 - Proper transaction management
 
 #### 2.3.3 Exception Handling
+
 - Comprehensive error handling throughout the application
 - User-friendly error messages
 - System stability and graceful degradation
 - Proper resource management with try-with-resources
 
 #### 2.3.4 User Interface Design
+
 - Modern, minimalistic design
 - Consistent visual language across all screens
 - Responsive layout and smooth transitions
@@ -149,12 +164,14 @@ The SCMS covers the following functional areas:
 This project demonstrates mastery of:
 
 1. **Object-Oriented Programming Concepts**
+
    - Class design and relationships
    - Inheritance hierarchies
    - Interface implementation
    - Polymorphic behavior
 
 2. **Java Programming Skills**
+
    - Swing GUI development
    - JDBC database connectivity
    - Exception handling mechanisms
@@ -162,6 +179,7 @@ This project demonstrates mastery of:
    - Multi-threading with SwingWorker
 
 3. **Software Engineering Practices**
+
    - Requirements analysis
    - System design and architecture
    - Code organization and documentation
@@ -192,11 +210,13 @@ Upon successful completion, the system should:
 The system is designed for three primary user groups:
 
 1. **Students** (Approximately 2,000+ users)
+
    - Undergraduate students
    - All years and programs
    - Primary focus: course registration and grade viewing
 
 2. **Lecturers** (Approximately 150+ users)
+
    - Full-time and part-time faculty
    - All departments
    - Primary focus: grade management and class lists
@@ -210,17 +230,20 @@ The system is designed for three primary user groups:
 ### 2.7 Project Constraints
 
 #### 2.7.1 Technical Constraints
+
 - Desktop application (not web-based)
 - Java Swing framework (not JavaFX)
 - MySQL database requirement
 - Single-server deployment
 
 #### 2.7.2 Time Constraints
+
 - Development period: 6 days (take-home exam duration)
 - Focus on core functionality
 - Documentation and testing within timeline
 
 #### 2.7.3 Resource Constraints
+
 - Limited to team member skills
 - Available development tools
 - Access to test database server
@@ -245,12 +268,14 @@ The project is considered successful if it:
 ### 3.1 Core Features
 
 #### Authentication and Authorization
+
 - Secure login with username/password
 - Role-based access control
 - Session management
 - Account creation for students
 
 #### Student Features
+
 - Dashboard with overview
 - Course browsing and registration
 - Grade viewing with GPA calculation
@@ -259,6 +284,7 @@ The project is considered successful if it:
 - Announcement viewing
 
 #### Lecturer Features
+
 - Course management dashboard
 - Student enrollment viewing
 - Grade upload with validation
@@ -266,6 +292,7 @@ The project is considered successful if it:
 - Profile management
 
 #### Admin Features
+
 - User management (create, update, delete)
 - System reports generation
 - Payment recording
@@ -275,24 +302,28 @@ The project is considered successful if it:
 ### 3.2 Technical Features
 
 #### Modern UI Design
+
 - Minimalistic, clean interface
 - Consistent color scheme (Segoe UI fonts, subtle borders)
 - Hover effects and visual feedback
 - Responsive layout
 
 #### Robust Error Handling
+
 - Try-catch-finally blocks
 - Try-with-resources for auto-closing
 - User-friendly error messages
 - System logging
 
 #### Database Operations
+
 - Prepared statements
 - Connection pooling
 - Transaction management
 - Stored procedures support
 
 #### Event-Driven Architecture
+
 - Button click events
 - Mouse hover events
 - Keyboard shortcuts

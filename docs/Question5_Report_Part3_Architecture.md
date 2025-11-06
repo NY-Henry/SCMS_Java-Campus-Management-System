@@ -1,4 +1,5 @@
 # SMART CAMPUS MANAGEMENT SYSTEM (SCMS)
+
 ## Part 3: Class Diagram and Architecture Overview
 
 ---
@@ -48,14 +49,17 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 ### 4.2 Layer Responsibilities
 
 #### 4.2.1 Presentation Layer (GUI)
+
 **Purpose:** User interface and user interaction handling
 
 **Components:**
+
 - Login and Registration Forms
 - Dashboard Panels (Student, Lecturer, Admin)
 - Feature-specific Panels (Courses, Grades, Announcements, etc.)
 
 **Responsibilities:**
+
 - Display data to users
 - Capture user input
 - Handle UI events (button clicks, selections)
@@ -63,6 +67,7 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - Provide visual feedback
 
 **Key Classes:**
+
 - `LoginForm.java`
 - `StudentRegistrationForm.java`
 - `StudentDashboard.java`
@@ -71,9 +76,11 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - Various panel classes (CourseRegistrationPanel, GradesPanel, etc.)
 
 #### 4.2.2 Service Layer (Business Logic)
+
 **Purpose:** Business logic, validation, and coordination
 
 **Components:**
+
 - Authentication Service
 - Course Management Service
 - Grade Management Service
@@ -82,6 +89,7 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - Log Service
 
 **Responsibilities:**
+
 - Implement business rules
 - Validate business logic
 - Coordinate between GUI and data layers
@@ -89,6 +97,7 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - Manage transactions
 
 **Key Classes:**
+
 - `AuthenticationService.java`
 - `CourseService.java`
 - `GradeService.java`
@@ -97,20 +106,24 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - `LogService.java`
 
 #### 4.2.3 Model Layer (Domain Objects)
+
 **Purpose:** Represent business entities
 
 **Components:**
+
 - User entities (Person, Student, Lecturer, Admin)
 - Academic entities (Course, CourseRegistration, Grade)
 - Communication entities (Announcement)
 
 **Responsibilities:**
+
 - Encapsulate business data
 - Provide data access methods
 - Maintain object state
 - Implement domain logic
 
 **Key Classes:**
+
 - `Person.java` (abstract base)
 - `Student.java`
 - `Lecturer.java`
@@ -121,15 +134,18 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - `Announcement.java`
 
 #### 4.2.4 Data Access Layer (Database Operations)
+
 **Purpose:** Database connectivity and operations
 
 **Components:**
+
 - Database connection management
 - Query execution
 - Result set processing
 - Transaction handling
 
 **Responsibilities:**
+
 - Establish database connections
 - Execute SQL queries
 - Handle database exceptions
@@ -137,19 +153,23 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 - Implement CRUD operations
 
 **Key Classes:**
+
 - `DatabaseOperations.java` (interface)
 - `MySQLDatabase.java` (implementation)
 
 #### 4.2.5 Database Layer
+
 **Purpose:** Data persistence
 
 **Components:**
+
 - Tables for data storage
 - Views for complex queries
 - Stored procedures for business logic
 - Triggers for data integrity
 
 **Database Objects:**
+
 - Tables: users, persons, students, lecturers, admins, courses, grades, etc.
 - Views: vw_student_details, vw_lecturer_details, vw_course_registrations
 - Stored Procedures: sp_calculate_student_gpa, sp_register_course, etc.
@@ -373,14 +393,15 @@ The Smart Campus Management System follows a layered architecture pattern, separ
 **Purpose:** Ensure only one database connection instance exists
 
 **Implementation:**
+
 ```java
 public class MySQLDatabase implements DatabaseOperations {
     private static MySQLDatabase instance;
-    
+
     private MySQLDatabase() {
         // Private constructor
     }
-    
+
     public static synchronized MySQLDatabase getInstance() {
         if (instance == null) {
             instance = new MySQLDatabase();
@@ -391,6 +412,7 @@ public class MySQLDatabase implements DatabaseOperations {
 ```
 
 **Benefits:**
+
 - Single connection point to database
 - Prevents multiple connection overhead
 - Thread-safe implementation
@@ -401,21 +423,25 @@ public class MySQLDatabase implements DatabaseOperations {
 **Separation of Concerns:**
 
 **Model (M):**
+
 - Domain objects (Person, Student, Course, etc.)
 - Represents data and business logic
 - Independent of UI
 
 **View (V):**
+
 - GUI components (JFrame, JPanel, JButton, etc.)
 - Displays data to users
 - Handles user interaction
 
 **Controller (C):**
+
 - Service classes (AuthenticationService, CourseService, etc.)
 - Mediates between Model and View
 - Handles business logic and validation
 
 **Benefits:**
+
 - Clear separation of concerns
 - Easy to maintain and test
 - Parallel development possible
@@ -426,6 +452,7 @@ public class MySQLDatabase implements DatabaseOperations {
 **Used in:** Dashboard creation based on user role
 
 **Implementation:**
+
 ```java
 private void openDashboard(Person user) {
     if (user instanceof Student) {
@@ -439,6 +466,7 @@ private void openDashboard(Person user) {
 ```
 
 **Benefits:**
+
 - Runtime object creation based on type
 - Flexible dashboard instantiation
 - Easy to add new user types
@@ -448,12 +476,14 @@ private void openDashboard(Person user) {
 **Used in:** GUI event handling
 
 **Implementation:**
+
 ```java
 loginButton.addActionListener(e -> handleLogin());
 courseCombo.addActionListener(e -> loadStudentsForCourse());
 ```
 
 **Benefits:**
+
 - Loose coupling between components
 - Event-driven architecture
 - Easy to add new event handlers
@@ -464,33 +494,33 @@ courseCombo.addActionListener(e -> loadStudentsForCourse());
 
 ### 7.1 Inheritance Relationships
 
-| Parent Class | Child Classes | Relationship Type |
-|-------------|---------------|-------------------|
-| Person | Student, Lecturer, Admin | IS-A (Inheritance) |
+| Parent Class | Child Classes            | Relationship Type  |
+| ------------ | ------------------------ | ------------------ |
+| Person       | Student, Lecturer, Admin | IS-A (Inheritance) |
 
 ### 7.2 Association Relationships
 
-| Class A | Class B | Relationship | Multiplicity |
-|---------|---------|--------------|--------------|
-| Student | Course | Registers for | Many-to-Many |
-| Lecturer | Course | Teaches | One-to-Many |
-| CourseRegistration | Grade | Has | One-to-One |
-| Person | Announcement | Posts | One-to-Many |
+| Class A            | Class B      | Relationship  | Multiplicity |
+| ------------------ | ------------ | ------------- | ------------ |
+| Student            | Course       | Registers for | Many-to-Many |
+| Lecturer           | Course       | Teaches       | One-to-Many  |
+| CourseRegistration | Grade        | Has           | One-to-One   |
+| Person             | Announcement | Posts         | One-to-Many  |
 
 ### 7.3 Composition Relationships
 
 | Container | Component | Relationship |
-|-----------|-----------|--------------|
-| Dashboard | Panels | Contains |
-| Service | Database | Uses |
+| --------- | --------- | ------------ |
+| Dashboard | Panels    | Contains     |
+| Service   | Database  | Uses         |
 
 ### 7.4 Dependency Relationships
 
-| Dependent | Dependency | Type |
-|-----------|------------|------|
-| GUI Classes | Service Classes | Uses |
-| Service Classes | Model Classes | Uses |
-| Service Classes | Database | Uses |
+| Dependent       | Dependency      | Type |
+| --------------- | --------------- | ---- |
+| GUI Classes     | Service Classes | Uses |
+| Service Classes | Model Classes   | Uses |
+| Service Classes | Database        | Uses |
 
 ---
 
