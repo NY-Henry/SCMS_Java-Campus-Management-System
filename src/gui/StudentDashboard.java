@@ -31,7 +31,7 @@ public class StudentDashboard extends JFrame {
 
     private void initializeUI() {
         setTitle("Student Dashboard - SCMS");
-        setSize(1200, 750);
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
