@@ -28,7 +28,7 @@ public class StudentRegistrationForm extends JFrame {
 
     private void initializeUI() {
         setTitle("Student Registration - SCMS");
-        setSize(600, 700);
+        setSize(650, 750);
         setLocationRelativeTo(parentForm);
         setResizable(false);
 
@@ -39,52 +39,58 @@ public class StudentRegistrationForm extends JFrame {
 
         // Header
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(41, 128, 185));
-        headerPanel.setPreferredSize(new Dimension(600, 60));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)),
+                BorderFactory.createEmptyBorder(25, 40, 25, 40)));
 
         JLabel headerLabel = new JLabel("Create Student Account");
-        headerLabel.setFont(new Font("Arial", Font.BOLD, 22));
-        headerLabel.setForeground(Color.WHITE);
+        headerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+        headerLabel.setForeground(new Color(45, 45, 45));
         headerPanel.add(headerLabel);
 
         // Form panel
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 20, 40));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(8, 5, 8, 5);
+        gbc.insets = new Insets(6, 5, 6, 5);
 
         // Row 0: First Name
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("First Name:"), gbc);
+        JLabel firstNameLabel = createFieldLabel("First Name");
+        formPanel.add(firstNameLabel, gbc);
         gbc.gridx = 1;
-        firstNameField = new JTextField(20);
+        firstNameField = createTextField();
         formPanel.add(firstNameField, gbc);
 
         // Row 1: Last Name
         gbc.gridx = 0;
         gbc.gridy = 1;
-        formPanel.add(new JLabel("Last Name:"), gbc);
+        JLabel lastNameLabel = createFieldLabel("Last Name");
+        formPanel.add(lastNameLabel, gbc);
         gbc.gridx = 1;
-        lastNameField = new JTextField(20);
+        lastNameField = createTextField();
         formPanel.add(lastNameField, gbc);
 
         // Row 2: Registration Number
         gbc.gridx = 0;
         gbc.gridy = 2;
-        formPanel.add(new JLabel("Registration Number:"), gbc);
+        JLabel regNumberLabel = createFieldLabel("Registration Number");
+        formPanel.add(regNumberLabel, gbc);
         gbc.gridx = 1;
-        regNumberField = new JTextField(20);
+        regNumberField = createTextField();
         formPanel.add(regNumberField, gbc);
 
         // Row 3: Program
         gbc.gridx = 0;
         gbc.gridy = 3;
-        formPanel.add(new JLabel("Program:"), gbc);
+        JLabel programLabel = createFieldLabel("Program");
+        formPanel.add(programLabel, gbc);
         gbc.gridx = 1;
         String[] programs = {
                 "Bachelor of Information Technology",
@@ -92,86 +98,85 @@ public class StudentRegistrationForm extends JFrame {
                 "Bachelor of Software Engineering",
                 "Bachelor of Information Systems"
         };
-        programCombo = new JComboBox<>(programs);
+        programCombo = createComboBox(programs);
         formPanel.add(programCombo, gbc);
 
         // Row 4: Year of Study
         gbc.gridx = 0;
         gbc.gridy = 4;
-        formPanel.add(new JLabel("Year of Study:"), gbc);
+        JLabel yearLabel = createFieldLabel("Year of Study");
+        formPanel.add(yearLabel, gbc);
         gbc.gridx = 1;
         String[] years = { "1", "2", "3", "4" };
-        yearCombo = new JComboBox<>(years);
+        yearCombo = createComboBox(years);
         formPanel.add(yearCombo, gbc);
 
         // Row 5: Semester
         gbc.gridx = 0;
         gbc.gridy = 5;
-        formPanel.add(new JLabel("Semester:"), gbc);
+        JLabel semesterLabel = createFieldLabel("Semester");
+        formPanel.add(semesterLabel, gbc);
         gbc.gridx = 1;
         String[] semesters = { "1", "2" };
-        semesterCombo = new JComboBox<>(semesters);
+        semesterCombo = createComboBox(semesters);
         formPanel.add(semesterCombo, gbc);
 
         // Row 6: Phone
         gbc.gridx = 0;
         gbc.gridy = 6;
-        formPanel.add(new JLabel("Phone Number:"), gbc);
+        JLabel phoneLabel = createFieldLabel("Phone Number");
+        formPanel.add(phoneLabel, gbc);
         gbc.gridx = 1;
-        phoneField = new JTextField(20);
+        phoneField = createTextField();
         formPanel.add(phoneField, gbc);
 
         // Row 7: Email
         gbc.gridx = 0;
         gbc.gridy = 7;
-        formPanel.add(new JLabel("Email:"), gbc);
+        JLabel emailLabel = createFieldLabel("Email");
+        formPanel.add(emailLabel, gbc);
         gbc.gridx = 1;
-        emailField = new JTextField(20);
+        emailField = createTextField();
         formPanel.add(emailField, gbc);
 
         // Row 8: Username
         gbc.gridx = 0;
         gbc.gridy = 8;
-        formPanel.add(new JLabel("Username:"), gbc);
+        JLabel usernameLabel = createFieldLabel("Username");
+        formPanel.add(usernameLabel, gbc);
         gbc.gridx = 1;
-        usernameField = new JTextField(20);
+        usernameField = createTextField();
         formPanel.add(usernameField, gbc);
 
         // Row 9: Password
         gbc.gridx = 0;
         gbc.gridy = 9;
-        formPanel.add(new JLabel("Password:"), gbc);
+        JLabel passwordLabel = createFieldLabel("Password");
+        formPanel.add(passwordLabel, gbc);
         gbc.gridx = 1;
-        passwordField = new JPasswordField(20);
+        passwordField = createPasswordField();
         formPanel.add(passwordField, gbc);
 
         // Row 10: Confirm Password
         gbc.gridx = 0;
         gbc.gridy = 10;
-        formPanel.add(new JLabel("Confirm Password:"), gbc);
+        JLabel confirmPasswordLabel = createFieldLabel("Confirm Password");
+        formPanel.add(confirmPasswordLabel, gbc);
         gbc.gridx = 1;
-        confirmPasswordField = new JPasswordField(20);
+        confirmPasswordField = createPasswordField();
         formPanel.add(confirmPasswordField, gbc);
 
         // Button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 40, 20, 40));
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 40, 30, 40));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 12, 0));
 
-        registerButton = new JButton("Register");
-        registerButton.setPreferredSize(new Dimension(120, 35));
-        registerButton.setBackground(new Color(46, 204, 113));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setFocusPainted(false);
-        registerButton.setBorderPainted(false);
+        registerButton = createMinimalButton("Register", new Color(70, 130, 180));
+        registerButton.setPreferredSize(new Dimension(130, 40));
 
-        cancelButton = new JButton("Cancel");
-        cancelButton.setPreferredSize(new Dimension(120, 35));
-        cancelButton.setBackground(new Color(231, 76, 60));
-        cancelButton.setForeground(Color.WHITE);
-        cancelButton.setFocusPainted(false);
-        cancelButton.setBorderPainted(false);
+        cancelButton = createMinimalButton("Cancel", new Color(100, 100, 110));
+        cancelButton.setPreferredSize(new Dimension(130, 40));
 
         buttonPanel.add(registerButton);
         buttonPanel.add(cancelButton);
@@ -197,6 +202,72 @@ public class StudentRegistrationForm extends JFrame {
                 dispose();
             }
         });
+    }
+
+    private JLabel createFieldLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        label.setForeground(new Color(120, 120, 120));
+        return label;
+    }
+
+    private JTextField createTextField() {
+        JTextField field = new JTextField(20);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.setForeground(new Color(45, 45, 45));
+        field.setPreferredSize(new Dimension(300, 38));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+        return field;
+    }
+
+    private JPasswordField createPasswordField() {
+        JPasswordField field = new JPasswordField(20);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.setForeground(new Color(45, 45, 45));
+        field.setPreferredSize(new Dimension(300, 38));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+        return field;
+    }
+
+    private JComboBox<String> createComboBox(String[] items) {
+        JComboBox<String> combo = new JComboBox<>(items);
+        combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        combo.setForeground(new Color(45, 45, 45));
+        combo.setBackground(Color.WHITE);
+        combo.setPreferredSize(new Dimension(300, 38));
+        combo.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        return combo;
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (button.isEnabled()) {
+                    button.setBackground(bgColor.darker());
+                }
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (button.isEnabled()) {
+                    button.setBackground(bgColor);
+                }
+            }
+        });
+
+        return button;
     }
 
     /**

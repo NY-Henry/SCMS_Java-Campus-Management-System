@@ -37,8 +37,7 @@ public class LecturerCoursesPanel extends JPanel {
         titleLabel.setForeground(new Color(45, 45, 45));
 
         // Refresh button
-        JButton refreshButton = createMinimalButton("\u21BB", new Color(100, 100, 110));
-        refreshButton.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
         refreshButton.addActionListener(e -> loadCourses());
 
         topPanel.add(titleLabel, BorderLayout.WEST);

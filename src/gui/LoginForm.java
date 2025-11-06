@@ -44,110 +44,134 @@ public class LoginForm extends JFrame {
     private void initializeUI() {
         // Frame settings
         setTitle("SCMS - Smart Campus Management System");
-        setSize(500, 400);
+        setSize(500, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main panel with gradient background
-        JPanel mainPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                int w = getWidth(), h = getHeight();
-                Color color1 = new Color(41, 128, 185);
-                Color color2 = new Color(109, 213, 250);
-                GradientPaint gp = new GradientPaint(0, 0, color1, 0, h, color2);
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, w, h);
-            }
-        };
+        // Main panel with clean white background
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(Color.WHITE);
         mainPanel.setLayout(new GridBagLayout());
 
-        // Login panel (white card)
+        // Login panel
         JPanel loginPanel = new JPanel();
         loginPanel.setBackground(Color.WHITE);
-        loginPanel.setPreferredSize(new Dimension(380, 320));
+        loginPanel.setPreferredSize(new Dimension(400, 520));
         loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
-        loginPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
-
-        // Add shadow effect
-        loginPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0, 0, 0, 20), 1),
-                BorderFactory.createEmptyBorder(30, 40, 30, 40)));
+        loginPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
         // Logo/Title
         JLabel titleLabel = new JLabel("NDEJJE UNIVERSITY");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(41, 128, 185));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        titleLabel.setForeground(new Color(45, 45, 45));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel subtitleLabel = new JLabel("Campus Management System");
-        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        subtitleLabel.setForeground(Color.GRAY);
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        subtitleLabel.setForeground(new Color(120, 120, 120));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Separator line
+        JSeparator separator = new JSeparator();
+        separator.setMaximumSize(new Dimension(320, 1));
+        separator.setForeground(new Color(230, 230, 235));
 
         // Username field
         JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+        usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        usernameLabel.setForeground(new Color(120, 120, 120));
         usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         usernameField = new JTextField();
-        usernameField.setMaximumSize(new Dimension(300, 35));
-        usernameField.setFont(new Font("Arial", Font.PLAIN, 14));
+        usernameField.setMaximumSize(new Dimension(320, 40));
+        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        usernameField.setForeground(new Color(45, 45, 45));
         usernameField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
 
         // Password field
         JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        passwordLabel.setForeground(new Color(120, 120, 120));
         passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         passwordField = new JPasswordField();
-        passwordField.setMaximumSize(new Dimension(300, 35));
-        passwordField.setFont(new Font("Arial", Font.PLAIN, 14));
+        passwordField.setMaximumSize(new Dimension(320, 40));
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        passwordField.setForeground(new Color(45, 45, 45));
         passwordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
 
         // Login button
         loginButton = new JButton("LOGIN");
-        loginButton.setMaximumSize(new Dimension(300, 40));
-        loginButton.setFont(new Font("Arial", Font.BOLD, 14));
+        loginButton.setMaximumSize(new Dimension(320, 44));
+        loginButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         loginButton.setForeground(Color.WHITE);
-        loginButton.setBackground(new Color(41, 128, 185));
+        loginButton.setBackground(new Color(70, 130, 180));
         loginButton.setFocusPainted(false);
         loginButton.setBorderPainted(false);
         loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Add hover effect
+        loginButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (loginButton.isEnabled()) {
+                    loginButton.setBackground(new Color(70, 130, 180).darker());
+                }
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (loginButton.isEnabled()) {
+                    loginButton.setBackground(new Color(70, 130, 180));
+                }
+            }
+        });
 
         // Register button
         registerButton = new JButton("Create Student Account");
-        registerButton.setMaximumSize(new Dimension(300, 35));
-        registerButton.setFont(new Font("Arial", Font.PLAIN, 12));
-        registerButton.setForeground(new Color(41, 128, 185));
+        registerButton.setMaximumSize(new Dimension(320, 40));
+        registerButton.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        registerButton.setForeground(new Color(100, 100, 110));
         registerButton.setBackground(Color.WHITE);
         registerButton.setFocusPainted(false);
-        registerButton.setBorder(BorderFactory.createLineBorder(new Color(41, 128, 185)));
+        registerButton.setBorderPainted(false);
+        registerButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(8, 16, 8, 16)));
         registerButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Add hover effect
+        registerButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                registerButton.setBackground(new Color(250, 250, 252));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                registerButton.setBackground(Color.WHITE);
+            }
+        });
 
         // Add components to login panel
         loginPanel.add(titleLabel);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 8)));
         loginPanel.add(subtitleLabel);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 35)));
+        loginPanel.add(separator);
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 35)));
         loginPanel.add(usernameLabel);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 8)));
         loginPanel.add(usernameField);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        loginPanel.add(passwordLabel);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        loginPanel.add(passwordField);
         loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        loginPanel.add(passwordLabel);
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+        loginPanel.add(passwordField);
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         loginPanel.add(loginButton);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 12)));
         loginPanel.add(registerButton);
 
         // Add login panel to main panel
