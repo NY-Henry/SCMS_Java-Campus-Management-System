@@ -25,82 +25,76 @@ public class SystemLogsPanel extends JPanel {
 
     public SystemLogsPanel(MySQLDatabase db) {
         this.db = db;
-        setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(236, 240, 241));
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         initializeComponents();
         loadLogs();
     }
 
     private void initializeComponents() {
-        // Top Panel with title and stats
-        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        // Top Panel with title and actions
+        JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
 
         JLabel titleLabel = new JLabel("System Logs");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
 
-        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        statsPanel.setOpaque(false);
+        // Action buttons (top right)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
 
-        totalLogsLabel = new JLabel("Total Logs: 0");
-        totalLogsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        filteredLogsLabel = new JLabel("Filtered: 0");
-        filteredLogsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        JButton exportBtn = createMinimalButton("Export CSV", new Color(70, 130, 180));
+        exportBtn.addActionListener(e -> exportLogs());
 
-        statsPanel.add(totalLogsLabel);
-        statsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        statsPanel.add(filteredLogsLabel);
+        JButton statsBtn = createMinimalButton("Statistics", new Color(100, 100, 110));
+        statsBtn.addActionListener(e -> showStatistics());
+
+        JButton clearBtn = createMinimalButton("Clear Old", new Color(220, 80, 80));
+        clearBtn.addActionListener(e -> clearOldLogs());
+
+        JButton refreshBtn = createMinimalButton("Refresh", new Color(100, 100, 110));
+        refreshBtn.addActionListener(e -> loadLogs());
+
+        buttonPanel.add(statsBtn);
+        buttonPanel.add(exportBtn);
+        buttonPanel.add(clearBtn);
+        buttonPanel.add(refreshBtn);
 
         topPanel.add(titleLabel, BorderLayout.WEST);
-        topPanel.add(statsPanel, BorderLayout.EAST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
 
-        add(topPanel, BorderLayout.NORTH);
+        // Filter Panel (simplified)
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        filterPanel.setOpaque(false);
+        filterPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Filter Panel
-        JPanel filterPanel = createFilterPanel();
-        add(filterPanel, BorderLayout.BEFORE_FIRST_LINE);
-
-        // Table Panel
-        JPanel tablePanel = createTablePanel();
-        add(tablePanel, BorderLayout.CENTER);
-
-        // Action Panel
-        JPanel actionPanel = createActionPanel();
-        add(actionPanel, BorderLayout.SOUTH);
-    }
-
-    private JPanel createFilterPanel() {
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        filterPanel.setBackground(Color.WHITE);
-        filterPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-        JLabel filterLabel = new JLabel("Filter by Action:");
-        filterLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        JLabel filterLabel = new JLabel("Filter:");
+        filterLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        filterLabel.setForeground(new Color(100, 100, 110));
 
         String[] filterOptions = {
-                "All Actions",
-                "LOGIN",
-                "LOGOUT",
-                "CREATE",
-                "UPDATE",
-                "DELETE",
-                "VIEW",
-                "EXPORT",
-                "REGISTER"
+                "All Actions", "LOGIN", "LOGOUT", "CREATE", "UPDATE",
+                "DELETE", "VIEW", "EXPORT", "REGISTER"
         };
 
         filterComboBox = new JComboBox<>(filterOptions);
-        filterComboBox.setPreferredSize(new Dimension(150, 30));
+        filterComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        filterComboBox.setPreferredSize(new Dimension(150, 35));
         filterComboBox.addActionListener(e -> applyFilter());
 
         JLabel searchLabel = new JLabel("Search:");
-        searchLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        searchLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        searchLabel.setForeground(new Color(100, 100, 110));
 
-        searchField = new JTextField(20);
-        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField = new JTextField(25);
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 225), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
                 applyFilter();
@@ -115,38 +109,73 @@ public class SystemLogsPanel extends JPanel {
             }
         });
 
-        JButton refreshBtn = new JButton("Refresh");
-        refreshBtn.setPreferredSize(new Dimension(100, 30));
-        refreshBtn.setBackground(new Color(52, 152, 219));
-        refreshBtn.setForeground(Color.WHITE);
-        refreshBtn.setFocusPainted(false);
-        refreshBtn.addActionListener(e -> loadLogs());
-
-        JButton clearFilterBtn = new JButton("Clear Filters");
-        clearFilterBtn.setPreferredSize(new Dimension(120, 30));
-        clearFilterBtn.setBackground(new Color(149, 165, 166));
-        clearFilterBtn.setForeground(Color.WHITE);
-        clearFilterBtn.setFocusPainted(false);
+        JButton clearFilterBtn = createMinimalButton("Clear", new Color(180, 180, 185));
         clearFilterBtn.addActionListener(e -> clearFilters());
 
         filterPanel.add(filterLabel);
         filterPanel.add(filterComboBox);
-        filterPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        filterPanel.add(Box.createHorizontalStrut(15));
         filterPanel.add(searchLabel);
         filterPanel.add(searchField);
-        filterPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        filterPanel.add(refreshBtn);
         filterPanel.add(clearFilterBtn);
 
-        return filterPanel;
+        // Header combining title and filters
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+        headerPanel.add(topPanel, BorderLayout.NORTH);
+        headerPanel.add(filterPanel, BorderLayout.SOUTH);
+
+        add(headerPanel, BorderLayout.NORTH);
+
+        // Table Panel
+        JPanel tablePanel = createTablePanel();
+        add(tablePanel, BorderLayout.CENTER);
+
+        // Stats Panel
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        statsPanel.setOpaque(false);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+
+        totalLogsLabel = new JLabel("Total Logs: 0");
+        totalLogsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        totalLogsLabel.setForeground(new Color(100, 100, 110));
+
+        filteredLogsLabel = new JLabel("Filtered: 0");
+        filteredLogsLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        filteredLogsLabel.setForeground(new Color(70, 130, 180));
+
+        statsPanel.add(totalLogsLabel);
+        statsPanel.add(filteredLogsLabel);
+
+        add(statsPanel, BorderLayout.SOUTH);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private JPanel createTablePanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(Color.WHITE);
-        tablePanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        tablePanel.setOpaque(false);
 
         String[] columns = { "Log ID", "Timestamp", "User", "Role", "Action", "Details", "IP Address" };
         tableModel = new DefaultTableModel(columns, 0) {
@@ -157,11 +186,21 @@ public class SystemLogsPanel extends JPanel {
         };
 
         logsTable = new JTable(tableModel);
-        logsTable.setFont(new Font("Arial", Font.PLAIN, 12));
-        logsTable.setRowHeight(30);
-        logsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
-        logsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        logsTable.getTableHeader().setForeground(Color.WHITE);
+        logsTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        logsTable.setRowHeight(40);
+        logsTable.setShowVerticalLines(false);
+        logsTable.setGridColor(new Color(240, 240, 245));
+        logsTable.setSelectionBackground(new Color(245, 247, 250));
+        logsTable.setSelectionForeground(new Color(45, 45, 45));
+
+        // Minimalist table header
+        logsTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        logsTable.getTableHeader().setBackground(Color.WHITE);
+        logsTable.getTableHeader().setForeground(new Color(120, 120, 120));
+        logsTable.getTableHeader().setOpaque(true);
+        logsTable.getTableHeader().setReorderingAllowed(false);
+        logsTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        logsTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         // Set column widths
         logsTable.getColumnModel().getColumn(0).setPreferredWidth(60); // Log ID
@@ -189,44 +228,15 @@ public class SystemLogsPanel extends JPanel {
         });
 
         JScrollPane scrollPane = new JScrollPane(logsTable);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
         return tablePanel;
     }
 
     private JPanel createActionPanel() {
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        actionPanel.setOpaque(false);
-
-        JButton exportBtn = new JButton("Export to CSV");
-        exportBtn.setPreferredSize(new Dimension(150, 35));
-        exportBtn.setBackground(new Color(46, 204, 113));
-        exportBtn.setForeground(Color.WHITE);
-        exportBtn.setFont(new Font("Arial", Font.BOLD, 12));
-        exportBtn.setFocusPainted(false);
-        exportBtn.addActionListener(e -> exportLogs());
-
-        JButton clearOldLogsBtn = new JButton("Clear Old Logs");
-        clearOldLogsBtn.setPreferredSize(new Dimension(150, 35));
-        clearOldLogsBtn.setBackground(new Color(231, 76, 60));
-        clearOldLogsBtn.setForeground(Color.WHITE);
-        clearOldLogsBtn.setFont(new Font("Arial", Font.BOLD, 12));
-        clearOldLogsBtn.setFocusPainted(false);
-        clearOldLogsBtn.addActionListener(e -> clearOldLogs());
-
-        JButton viewStatsBtn = new JButton("View Statistics");
-        viewStatsBtn.setPreferredSize(new Dimension(150, 35));
-        viewStatsBtn.setBackground(new Color(155, 89, 182));
-        viewStatsBtn.setForeground(Color.WHITE);
-        viewStatsBtn.setFont(new Font("Arial", Font.BOLD, 12));
-        viewStatsBtn.setFocusPainted(false);
-        viewStatsBtn.addActionListener(e -> showStatistics());
-
-        actionPanel.add(viewStatsBtn);
-        actionPanel.add(exportBtn);
-        actionPanel.add(clearOldLogsBtn);
-
-        return actionPanel;
+        return new JPanel(); // Deprecated - actions now in top buttons
     }
 
     private void loadLogs() {
