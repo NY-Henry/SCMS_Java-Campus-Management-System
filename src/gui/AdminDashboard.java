@@ -21,6 +21,7 @@ public class AdminDashboard extends JFrame {
     private PaymentService paymentService;
     private LogService logService;
     private MySQLDatabase db;
+    private JButton activeButton; // Track currently active menu button
 
     public AdminDashboard(Admin admin) {
         this.admin = admin;
@@ -127,15 +128,31 @@ public class AdminDashboard extends JFrame {
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(52, 73, 94));
+                if (button != activeButton) {
+                    button.setBackground(new Color(52, 73, 94));
+                }
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(44, 62, 80));
+                if (button != activeButton) {
+                    button.setBackground(new Color(44, 62, 80));
+                }
             }
         });
 
-        button.addActionListener(action);
+        button.addActionListener(e -> {
+            // Reset previous active button
+            if (activeButton != null) {
+                activeButton.setBackground(new Color(44, 62, 80));
+            }
+            // Set new active button
+            activeButton = button;
+            button.setBackground(new Color(52, 73, 94));
+            
+            // Execute the action
+            action.actionPerformed(e);
+        });
+        
         sidebar.add(button);
     }
 
