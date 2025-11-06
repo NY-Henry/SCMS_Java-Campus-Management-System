@@ -20,12 +20,47 @@ public class ManageStudentsPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        JLabel titleLabel = new JLabel("Manage Students");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        // Top panel with title and action buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
 
+        JLabel titleLabel = new JLabel("Students");
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+
+        // Action buttons panel (top right)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+
+        JButton addButton = createMinimalButton("+ Add Student", new Color(70, 130, 180));
+        addButton.addActionListener(e -> showAddStudentDialog());
+
+        JButton editButton = createMinimalButton("Edit", new Color(100, 100, 110));
+        editButton.addActionListener(e -> showEditStudentDialog());
+
+        JButton deleteButton = createMinimalButton("Delete", new Color(220, 80, 80));
+        deleteButton.addActionListener(e -> deleteSelectedStudent());
+
+        JButton updateFeeButton = createMinimalButton("Update Fees", new Color(100, 100, 110));
+        updateFeeButton.addActionListener(e -> showUpdateFeeBalanceDialog());
+
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
+        refreshButton.addActionListener(e -> loadStudents());
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(updateFeeButton);
+        buttonPanel.add(refreshButton);
+
+        topPanel.add(titleLabel, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Table setup
         String[] columns = { "ID", "Reg Number", "Full Name", "Program", "Year", "GPA", "Fee Balance", "Status" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -35,71 +70,52 @@ public class ManageStudentsPanel extends JPanel {
         };
 
         studentsTable = new JTable(tableModel);
-        studentsTable.setRowHeight(30);
-        studentsTable.setFont(new Font("Arial", Font.PLAIN, 13));
+        studentsTable.setRowHeight(40);
+        studentsTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        studentsTable.setShowVerticalLines(false);
+        studentsTable.setGridColor(new Color(240, 240, 245));
+        studentsTable.setSelectionBackground(new Color(245, 247, 250));
+        studentsTable.setSelectionForeground(new Color(45, 45, 45));
 
-        // Style table header with better visibility
-        studentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        studentsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        studentsTable.getTableHeader().setForeground(Color.BLACK);
+        // Minimalist table header
+        studentsTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        studentsTable.getTableHeader().setBackground(Color.WHITE);
+        studentsTable.getTableHeader().setForeground(new Color(120, 120, 120));
         studentsTable.getTableHeader().setOpaque(true);
         studentsTable.getTableHeader().setReorderingAllowed(false);
-        studentsTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
+        studentsTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        studentsTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         JScrollPane scrollPane = new JScrollPane(studentsTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.setBackground(new Color(236, 240, 241));
-
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.setBackground(new Color(52, 152, 219));
-        refreshButton.setForeground(Color.WHITE);
-        refreshButton.setFocusPainted(false);
-        refreshButton.setBorderPainted(false);
-        refreshButton.addActionListener(e -> loadStudents());
-
-        JButton addButton = new JButton("Add Student");
-        addButton.setBackground(new Color(46, 204, 113));
-        addButton.setForeground(Color.WHITE);
-        addButton.setFocusPainted(false);
-        addButton.setBorderPainted(false);
-        addButton.addActionListener(e -> showAddStudentDialog());
-
-        JButton editButton = new JButton("Edit Student");
-        editButton.setBackground(new Color(243, 156, 18));
-        editButton.setForeground(Color.WHITE);
-        editButton.setFocusPainted(false);
-        editButton.setBorderPainted(false);
-        editButton.addActionListener(e -> showEditStudentDialog());
-
-        JButton deleteButton = new JButton("Delete Student");
-        deleteButton.setBackground(new Color(231, 76, 60));
-        deleteButton.setForeground(Color.WHITE);
-        deleteButton.setFocusPainted(false);
-        deleteButton.setBorderPainted(false);
-        deleteButton.addActionListener(e -> deleteSelectedStudent());
-
-        JButton updateFeeButton = new JButton("Update Fee Balance");
-        updateFeeButton.setBackground(new Color(155, 89, 182));
-        updateFeeButton.setForeground(Color.WHITE);
-        updateFeeButton.setFocusPainted(false);
-        updateFeeButton.setBorderPainted(false);
-        updateFeeButton.addActionListener(e -> showUpdateFeeBalanceDialog());
-
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(updateFeeButton);
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(new Color(236, 240, 241));
-        topPanel.add(titleLabel, BorderLayout.NORTH);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        // Hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void loadStudents() {

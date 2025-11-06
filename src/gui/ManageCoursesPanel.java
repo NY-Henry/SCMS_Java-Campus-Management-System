@@ -24,12 +24,47 @@ public class ManageCoursesPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        JLabel titleLabel = new JLabel("Manage Courses");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        // Top panel with title and action buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
 
+        JLabel titleLabel = new JLabel("Courses");
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+
+        // Action buttons panel (top right)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+
+        JButton addButton = createMinimalButton("+ Add Course", new Color(70, 130, 180));
+        addButton.addActionListener(e -> showAddCourseDialog());
+
+        JButton editButton = createMinimalButton("Edit", new Color(100, 100, 110));
+        editButton.addActionListener(e -> showEditCourseDialog());
+
+        JButton deleteButton = createMinimalButton("Delete", new Color(220, 80, 80));
+        deleteButton.addActionListener(e -> deleteSelectedCourse());
+
+        JButton assignButton = createMinimalButton("Assign Lecturer", new Color(100, 100, 110));
+        assignButton.addActionListener(e -> showAssignLecturerDialog());
+
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
+        refreshButton.addActionListener(e -> loadCourses());
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(assignButton);
+        buttonPanel.add(refreshButton);
+
+        topPanel.add(titleLabel, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Table setup
         String[] columns = { "ID", "Code", "Course Name", "Credits", "Department", "Year", "Semester", "Lecturer" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -39,71 +74,52 @@ public class ManageCoursesPanel extends JPanel {
         };
 
         coursesTable = new JTable(tableModel);
-        coursesTable.setRowHeight(30);
-        coursesTable.setFont(new Font("Arial", Font.PLAIN, 13));
+        coursesTable.setRowHeight(40);
+        coursesTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        coursesTable.setShowVerticalLines(false);
+        coursesTable.setGridColor(new Color(240, 240, 245));
+        coursesTable.setSelectionBackground(new Color(245, 247, 250));
+        coursesTable.setSelectionForeground(new Color(45, 45, 45));
 
-        // Style table header with better visibility
-        coursesTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        coursesTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        coursesTable.getTableHeader().setForeground(Color.BLACK);
+        // Minimalist table header
+        coursesTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        coursesTable.getTableHeader().setBackground(Color.WHITE);
+        coursesTable.getTableHeader().setForeground(new Color(120, 120, 120));
         coursesTable.getTableHeader().setOpaque(true);
         coursesTable.getTableHeader().setReorderingAllowed(false);
-        coursesTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
+        coursesTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        coursesTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         JScrollPane scrollPane = new JScrollPane(coursesTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.setBackground(new Color(236, 240, 241));
-
-        JButton addButton = new JButton("Add New Course");
-        addButton.setBackground(new Color(46, 204, 113));
-        addButton.setForeground(Color.WHITE);
-        addButton.setFocusPainted(false);
-        addButton.setBorderPainted(false);
-        addButton.addActionListener(e -> showAddCourseDialog());
-
-        JButton editButton = new JButton("Edit Course");
-        editButton.setBackground(new Color(243, 156, 18));
-        editButton.setForeground(Color.WHITE);
-        editButton.setFocusPainted(false);
-        editButton.setBorderPainted(false);
-        editButton.addActionListener(e -> showEditCourseDialog());
-
-        JButton deleteButton = new JButton("Delete Course");
-        deleteButton.setBackground(new Color(231, 76, 60));
-        deleteButton.setForeground(Color.WHITE);
-        deleteButton.setFocusPainted(false);
-        deleteButton.setBorderPainted(false);
-        deleteButton.addActionListener(e -> deleteSelectedCourse());
-
-        JButton assignButton = new JButton("Assign Lecturer");
-        assignButton.setBackground(new Color(155, 89, 182));
-        assignButton.setForeground(Color.WHITE);
-        assignButton.setFocusPainted(false);
-        assignButton.setBorderPainted(false);
-        assignButton.addActionListener(e -> showAssignLecturerDialog());
-
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.setBackground(new Color(52, 152, 219));
-        refreshButton.setForeground(Color.WHITE);
-        refreshButton.setFocusPainted(false);
-        refreshButton.setBorderPainted(false);
-        refreshButton.addActionListener(e -> loadCourses());
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(assignButton);
-        buttonPanel.add(refreshButton);
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(new Color(236, 240, 241));
-        topPanel.add(titleLabel, BorderLayout.NORTH);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        // Hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void loadCourses() {

@@ -20,12 +20,43 @@ public class ManageLecturersPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        JLabel titleLabel = new JLabel("Manage Lecturers");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        // Top panel with title and action buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
 
+        JLabel titleLabel = new JLabel("Lecturers");
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+
+        // Action buttons panel (top right)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+
+        JButton addButton = createMinimalButton("+ Add Lecturer", new Color(70, 130, 180));
+        addButton.addActionListener(e -> showAddLecturerDialog());
+
+        JButton editButton = createMinimalButton("Edit", new Color(100, 100, 110));
+        editButton.addActionListener(e -> showEditLecturerDialog());
+
+        JButton deleteButton = createMinimalButton("Delete", new Color(220, 80, 80));
+        deleteButton.addActionListener(e -> deleteSelectedLecturer());
+
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
+        refreshButton.addActionListener(e -> loadLecturers());
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(refreshButton);
+
+        topPanel.add(titleLabel, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Table setup
         String[] columns = { "ID", "Employee #", "Full Name", "Department", "Specialization", "Office" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -35,63 +66,53 @@ public class ManageLecturersPanel extends JPanel {
         };
 
         lecturersTable = new JTable(tableModel);
-        lecturersTable.setRowHeight(30);
-        lecturersTable.setFont(new Font("Arial", Font.PLAIN, 13));
+        lecturersTable.setRowHeight(40);
+        lecturersTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lecturersTable.setShowVerticalLines(false);
+        lecturersTable.setGridColor(new Color(240, 240, 245));
+        lecturersTable.setSelectionBackground(new Color(245, 247, 250));
+        lecturersTable.setSelectionForeground(new Color(45, 45, 45));
 
-        // Style table header with better visibility
-        lecturersTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        lecturersTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        lecturersTable.getTableHeader().setForeground(Color.BLACK);
+        // Minimalist table header
+        lecturersTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lecturersTable.getTableHeader().setBackground(Color.WHITE);
+        lecturersTable.getTableHeader().setForeground(new Color(120, 120, 120));
         lecturersTable.getTableHeader().setOpaque(true);
         lecturersTable.getTableHeader().setReorderingAllowed(false);
-        lecturersTable.getTableHeader().setPreferredSize(new Dimension(0, 40));
+        lecturersTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        lecturersTable.getTableHeader()
+                .setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         JScrollPane scrollPane = new JScrollPane(lecturersTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.setBackground(new Color(236, 240, 241));
-
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.setBackground(new Color(52, 152, 219));
-        refreshButton.setForeground(Color.WHITE);
-        refreshButton.setFocusPainted(false);
-        refreshButton.setBorderPainted(false);
-        refreshButton.addActionListener(e -> loadLecturers());
-
-        JButton addButton = new JButton("Add Lecturer");
-        addButton.setBackground(new Color(46, 204, 113));
-        addButton.setForeground(Color.WHITE);
-        addButton.setFocusPainted(false);
-        addButton.setBorderPainted(false);
-        addButton.addActionListener(e -> showAddLecturerDialog());
-
-        JButton editButton = new JButton("Edit Lecturer");
-        editButton.setBackground(new Color(243, 156, 18));
-        editButton.setForeground(Color.WHITE);
-        editButton.setFocusPainted(false);
-        editButton.setBorderPainted(false);
-        editButton.addActionListener(e -> showEditLecturerDialog());
-
-        JButton deleteButton = new JButton("Delete Lecturer");
-        deleteButton.setBackground(new Color(231, 76, 60));
-        deleteButton.setForeground(Color.WHITE);
-        deleteButton.setFocusPainted(false);
-        deleteButton.setBorderPainted(false);
-        deleteButton.addActionListener(e -> deleteSelectedLecturer());
-
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(new Color(236, 240, 241));
-        topPanel.add(titleLabel, BorderLayout.NORTH);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        // Hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void loadLecturers() {
