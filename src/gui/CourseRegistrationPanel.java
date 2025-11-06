@@ -181,14 +181,6 @@ public class CourseRegistrationPanel extends JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             String academicYear = "2025/2026";
 
-            // Debug output
-            System.out.println("DEBUG: Attempting registration:");
-            System.out.println("  Student ID: " + student.getStudentId());
-            System.out.println("  Course ID: " + courseId);
-            System.out.println("  Course Code: " + courseCode);
-            System.out.println("  Academic Year: " + academicYear);
-            System.out.println("  Course Semester: " + courseSemester);
-
             boolean success = courseService.registerCourse(
                     student.getStudentId(), courseId, academicYear, courseSemester);
 

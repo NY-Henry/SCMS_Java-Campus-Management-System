@@ -162,11 +162,6 @@ public class UploadGradesPanel extends JPanel {
 
             String academicYear = "2025/2026";
 
-            // Debug output
-            System.out.println("DEBUG UploadGrades: Loading students for course:");
-            System.out.println("  Course ID: " + selectedCourse.getCourseId());
-            System.out.println("  Course Code: " + selectedCourse.getCourseCode());
-
             String query = "SELECT cr.registration_id, cr.student_id, cr.status, " +
                     "s.registration_number, " +
                     "CONCAT(p.first_name, ' ', p.last_name) as student_name " +
@@ -195,8 +190,6 @@ public class UploadGradesPanel extends JPanel {
                 studentCombo.addItem(enrollment.getRegistrationNumber() + " - " + enrollment.getStudentName());
                 count++;
             }
-
-            System.out.println("DEBUG: Loaded " + count + " students");
 
             // Close ResultSet properly
             if (rs != null) {

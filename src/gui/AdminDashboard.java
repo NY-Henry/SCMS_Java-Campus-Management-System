@@ -159,21 +159,35 @@ public class AdminDashboard extends JFrame {
     private void showDashboardHome() {
         contentPanel.removeAll();
 
-        JPanel homePanel = new JPanel();
-        homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
-        homePanel.setBackground(new Color(236, 240, 241));
+        JPanel homePanel = new JPanel(new BorderLayout());
+        homePanel.setBackground(Color.WHITE);
+        homePanel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
 
-        JLabel welcomeLabel = new JLabel("Welcome, Administrator!");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        welcomeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Top section - Welcome message
+        JPanel topSection = new JPanel(new BorderLayout());
+        topSection.setOpaque(false);
 
-        homePanel.add(welcomeLabel);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        JLabel welcomeLabel = new JLabel("Dashboard");
+        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 36));
+        welcomeLabel.setForeground(new Color(45, 45, 45));
 
-        // Statistics cards
-        JPanel statsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
-        statsPanel.setMaximumSize(new Dimension(1100, 120));
-        statsPanel.setOpaque(false);
+        JLabel subtitleLabel = new JLabel("Welcome back, " + admin.getFullName());
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        subtitleLabel.setForeground(new Color(120, 120, 120));
+
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setOpaque(false);
+        titlePanel.add(welcomeLabel);
+        titlePanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        titlePanel.add(subtitleLabel);
+
+        topSection.add(titlePanel, BorderLayout.WEST);
+
+        // Statistics section - Minimalist cards
+        JPanel statsSection = new JPanel(new GridLayout(2, 2, 30, 30));
+        statsSection.setOpaque(false);
+        statsSection.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
 
         // Load dynamic statistics from database
         int totalStudents = getStatCount("SELECT COUNT(*) as count FROM students WHERE status = 'ACTIVE'");
@@ -181,68 +195,74 @@ public class AdminDashboard extends JFrame {
         int totalCourses = getStatCount("SELECT COUNT(*) as count FROM courses");
         int activeUsers = getStatCount("SELECT COUNT(*) as count FROM users WHERE is_active = TRUE");
 
-        statsPanel.add(createStatCard("Total Students", String.valueOf(totalStudents), new Color(52, 152, 219)));
-        statsPanel.add(createStatCard("Total Lecturers", String.valueOf(totalLecturers), new Color(155, 89, 182)));
-        statsPanel.add(createStatCard("Total Courses", String.valueOf(totalCourses), new Color(46, 204, 113)));
-        statsPanel.add(createStatCard("Active Users", String.valueOf(activeUsers), new Color(241, 196, 15)));
+        statsSection.add(createMinimalStatCard("Students", String.valueOf(totalStudents), "\u25CF"));
+        statsSection.add(createMinimalStatCard("Lecturers", String.valueOf(totalLecturers), "\u25A0"));
+        statsSection.add(createMinimalStatCard("Courses", String.valueOf(totalCourses), "\u25B2"));
+        statsSection.add(createMinimalStatCard("Active Users", String.valueOf(activeUsers), "\u2713"));
 
-        homePanel.add(statsPanel);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        // Main content panel
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setOpaque(false);
+        mainContent.add(topSection, BorderLayout.NORTH);
+        mainContent.add(statsSection, BorderLayout.CENTER);
 
-        // Info card
-        JPanel infoCard = new JPanel();
-        infoCard.setLayout(new BoxLayout(infoCard, BoxLayout.Y_AXIS));
-        infoCard.setBackground(Color.WHITE);
-        infoCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
-        infoCard.setMaximumSize(new Dimension(1100, 200));
+        homePanel.add(mainContent, BorderLayout.CENTER);
 
-        JLabel infoTitle = new JLabel("System Overview");
-        infoTitle.setFont(new Font("Arial", Font.BOLD, 20));
-
-        JLabel info1 = new JLabel("• Access Level: " + admin.getAccessLevel() + " (Full Access)");
-        JLabel info2 = new JLabel("• Department: " + admin.getDepartment());
-        JLabel info3 = new JLabel("• System Status: All systems operational");
-
-        info1.setFont(new Font("Arial", Font.PLAIN, 15));
-        info2.setFont(new Font("Arial", Font.PLAIN, 15));
-        info3.setFont(new Font("Arial", Font.PLAIN, 15));
-
-        infoCard.add(infoTitle);
-        infoCard.add(Box.createRigidArea(new Dimension(0, 15)));
-        infoCard.add(info1);
-        infoCard.add(Box.createRigidArea(new Dimension(0, 8)));
-        infoCard.add(info2);
-        infoCard.add(Box.createRigidArea(new Dimension(0, 8)));
-        infoCard.add(info3);
-
-        homePanel.add(infoCard);
-
-        contentPanel.add(homePanel, BorderLayout.NORTH);
+        contentPanel.add(homePanel);
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
-    private JPanel createStatCard(String title, String value, Color color) {
-        JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBackground(color);
-        card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    private JPanel createMinimalStatCard(String title, String value, String icon) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(new Color(250, 250, 252));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)));
 
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        titleLabel.setForeground(new Color(255, 255, 255, 200));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Icon/Emoji
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font("Arial Unicode MS", Font.PLAIN, 28));
+        iconLabel.setForeground(new Color(100, 100, 120));
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
+        // Value
         JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        valueLabel.setForeground(Color.WHITE);
-        valueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 48));
+        valueLabel.setForeground(new Color(45, 45, 45));
 
-        card.add(titleLabel);
-        card.add(Box.createRigidArea(new Dimension(0, 10)));
-        card.add(valueLabel);
+        // Title
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        titleLabel.setForeground(new Color(120, 120, 120));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+
+        // Arrange vertically
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
+
+        iconLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        contentPanel.add(iconLabel);
+        contentPanel.add(valueLabel);
+        contentPanel.add(titleLabel);
+
+        card.add(contentPanel, BorderLayout.WEST);
+
+        // Hover effect
+        card.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                card.setBackground(new Color(248, 248, 250));
+                card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                card.setBackground(new Color(250, 250, 252));
+            }
+        });
 
         return card;
     }

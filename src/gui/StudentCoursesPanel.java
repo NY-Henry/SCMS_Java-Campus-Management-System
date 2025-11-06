@@ -151,11 +151,6 @@ public class StudentCoursesPanel extends JPanel {
                 "Confirm Drop", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            // Debug output
-            System.out.println("DEBUG: Attempting to drop course:");
-            System.out.println("  Registration ID: " + registrationId);
-            System.out.println("  Student ID: " + student.getStudentId());
-            System.out.println("  Course Code: " + courseCode);
 
             boolean success = courseService.dropCourse(registrationId, student.getStudentId());
 

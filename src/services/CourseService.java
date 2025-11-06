@@ -97,9 +97,6 @@ public class CourseService {
     public boolean dropCourse(int registrationId, int studentId) {
         ResultSet rs = null;
         try {
-            // Debug output
-            System.out.println(
-                    "DEBUG CourseService.dropCourse: registration_id=" + registrationId + ", student_id=" + studentId);
 
             // Verify the registration belongs to the student
             String checkQuery = "SELECT registration_id FROM course_registrations " +
@@ -108,7 +105,6 @@ public class CourseService {
             rs = db.executePreparedSelect(checkQuery, new Object[] { registrationId, studentId });
 
             if (rs == null || !rs.next()) {
-                System.err.println("DEBUG: Registration not found or already dropped");
                 throw new IllegalArgumentException("Invalid registration or already dropped!");
             }
 
@@ -122,7 +118,7 @@ public class CourseService {
             if (success) {
                 System.out.println("Course dropped successfully!");
             } else {
-                System.err.println("DEBUG: Update query failed");
+                System.err.println("Update query failed");
             }
 
             return success;

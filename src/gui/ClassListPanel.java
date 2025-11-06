@@ -120,13 +120,6 @@ public class ClassListPanel extends JPanel {
             // Use the course's actual semester, not hardcoded
             String academicYear = "2025/2026";
 
-            // Debug output
-            System.out.println("DEBUG: Loading students for course:");
-            System.out.println("  Course ID: " + selectedCourse.getCourseId());
-            System.out.println("  Course Code: " + selectedCourse.getCourseCode());
-            System.out.println("  Course Semester: " + selectedCourse.getSemester());
-            System.out.println("  Academic Year: " + academicYear);
-
             String query = "SELECT cr.registration_id, cr.student_id, cr.status, " +
                     "s.registration_number, " +
                     "CONCAT(p.first_name, ' ', p.last_name) as student_name " +
@@ -151,8 +144,6 @@ public class ClassListPanel extends JPanel {
                 });
                 count++;
             }
-
-            System.out.println("DEBUG: Loaded " + count + " students");
 
             // Close ResultSet properly
             if (rs != null) {

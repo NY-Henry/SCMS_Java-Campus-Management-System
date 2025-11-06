@@ -161,11 +161,6 @@ public class ManageStudentsPanel extends JPanel {
         String regNumber = (String) tableModel.getValueAt(selectedRow, 1);
         String fullName = (String) tableModel.getValueAt(selectedRow, 2);
 
-        // Debug output
-        System.out.println("DEBUG: Attempting to delete student_id = " + studentId);
-        System.out.println("DEBUG: Registration Number = " + regNumber);
-        System.out.println("DEBUG: Full Name = " + fullName);
-
         // Confirm deletion
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to delete this student?\n\n" +
@@ -184,7 +179,6 @@ public class ManageStudentsPanel extends JPanel {
                 JOptionPane.WARNING_MESSAGE);
 
         if (confirm != JOptionPane.YES_OPTION) {
-            System.out.println("DEBUG: Deletion cancelled by user");
             return;
         }
 
@@ -196,7 +190,6 @@ public class ManageStudentsPanel extends JPanel {
                     "FROM students s " +
                     "JOIN persons p ON s.person_id = p.person_id " +
                     "WHERE s.student_id = " + studentId;
-            System.out.println("DEBUG: Executing query: " + getIdsQuery);
             ResultSet rs = db.fetchData(getIdsQuery);
 
             int personId = 0;
@@ -205,14 +198,12 @@ public class ManageStudentsPanel extends JPanel {
             if (rs != null && rs.next()) {
                 personId = rs.getInt("person_id");
                 userId = rs.getInt("user_id");
-                System.out.println("DEBUG: Found person_id = " + personId + ", user_id = " + userId);
             }
 
             if (personId == 0 || userId == 0) {
                 JOptionPane.showMessageDialog(this,
                         "Error: Could not find student details.",
                         "Error", JOptionPane.ERROR_MESSAGE);
-                System.out.println("DEBUG: ERROR - person_id or user_id is 0");
                 return;
             }
 
@@ -221,45 +212,31 @@ public class ManageStudentsPanel extends JPanel {
 
             // 1. Delete grades
             String deleteGrades = "DELETE FROM grades WHERE student_id = " + studentId;
-            System.out.println("DEBUG: Executing: " + deleteGrades);
             rowsAffected = db.executeUpdate(deleteGrades);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " grades");
 
             // 2. Delete course registrations
             String deleteRegistrations = "DELETE FROM course_registrations WHERE student_id = " + studentId;
-            System.out.println("DEBUG: Executing: " + deleteRegistrations);
             rowsAffected = db.executeUpdate(deleteRegistrations);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " registrations");
 
             // 3. Delete payments
             String deletePayments = "DELETE FROM payments WHERE student_id = " + studentId;
-            System.out.println("DEBUG: Executing: " + deletePayments);
             rowsAffected = db.executeUpdate(deletePayments);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " payments");
 
             // 4. Delete attendance records
             String deleteAttendance = "DELETE FROM attendance WHERE student_id = " + studentId;
-            System.out.println("DEBUG: Executing: " + deleteAttendance);
             rowsAffected = db.executeUpdate(deleteAttendance);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " attendance records");
 
             // 5. Delete student record
             String deleteStudent = "DELETE FROM students WHERE student_id = " + studentId;
-            System.out.println("DEBUG: Executing: " + deleteStudent);
             rowsAffected = db.executeUpdate(deleteStudent);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " student record(s)");
 
             // 6. Delete person record
             String deletePerson = "DELETE FROM persons WHERE person_id = " + personId;
-            System.out.println("DEBUG: Executing: " + deletePerson);
             rowsAffected = db.executeUpdate(deletePerson);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " person record(s)");
 
             // 7. Delete user account
             String deleteUser = "DELETE FROM users WHERE user_id = " + userId;
-            System.out.println("DEBUG: Executing: " + deleteUser);
             rowsAffected = db.executeUpdate(deleteUser);
-            System.out.println("DEBUG: Deleted " + rowsAffected + " user record(s)");
 
             // Close and reopen connection to ensure fresh state
             db.disconnect();
@@ -269,8 +246,6 @@ public class ManageStudentsPanel extends JPanel {
                             "Student: " + fullName + "\n" +
                             "Registration: " + regNumber,
                     "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            System.out.println("DEBUG: Deletion completed successfully");
 
             // Refresh the table with a small delay to ensure DB is updated
             SwingUtilities.invokeLater(() -> {
@@ -287,7 +262,6 @@ public class ManageStudentsPanel extends JPanel {
                     "Error deleting student: " + e.getMessage() + "\n\n" +
                             "The student may have related records that prevent deletion.",
                     "Error", JOptionPane.ERROR_MESSAGE);
-            System.err.println("DEBUG: ERROR during deletion:");
             e.printStackTrace();
             db.disconnect();
         }
