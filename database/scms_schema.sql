@@ -193,55 +193,46 @@ INSERT INTO users (username, password, role, email)
 VALUES ('admin', 'admin123', 'ADMIN', 'admin@ndejje.ac.ug');
 
 INSERT INTO persons (user_id, first_name, last_name, date_of_birth, gender, phone_number, address) 
-VALUES (1, 'System', 'Administrator', '1980-01-01', 'MALE', '+256700000000', 'Ndejje University');
+VALUES (1, 'Moses', 'Ssemakula', '1978-03-15', 'MALE', '+256700123456', 'Ndejje University, Luweero');
 
 INSERT INTO admins (person_id, employee_number, department, access_level) 
-VALUES (1, 'EMP001', 'IT Department', 3);
+VALUES (1, 'ADM001', 'IT Department', 3);
 
--- Insert Sample Lecturers
+-- Insert Sample Lecturer
 INSERT INTO users (username, password, role, email) VALUES 
-('lec001', 'password123', 'LECTURER', 'drsmith@ndejje.ac.ug'),
-('lec002', 'password123', 'LECTURER', 'profkagwa@ndejje.ac.ug');
+('lec', 'lec123', 'LECTURER', 'mugisha@ndejje.ac.ug');
 
 INSERT INTO persons (user_id, first_name, last_name, date_of_birth, gender, phone_number) VALUES 
-(2, 'John', 'Smith', '1975-05-15', 'MALE', '+256701111111'),
-(3, 'Sarah', 'Kagwa', '1980-08-20', 'FEMALE', '+256702222222');
+(2, 'Robert', 'Mugisha', '1982-11-20', 'MALE', '+256701234567');
 
 INSERT INTO lecturers (person_id, employee_number, department, specialization, hire_date, office_location) VALUES 
-(2, 'LEC001', 'Computing', 'Software Engineering', '2010-01-15', 'Block A, Room 101'),
-(3, 'LEC002', 'Computing', 'Database Systems', '2012-03-20', 'Block A, Room 102');
+(2, 'LEC001', 'Computing', 'Software Engineering', '2015-09-01', 'Block A, Room 105');
 
--- Insert Sample Students
+-- Insert Sample Student
 INSERT INTO users (username, password, role, email) VALUES 
-('stu001', 'password123', 'STUDENT', 'jdoe@students.ndejje.ac.ug'),
-('stu002', 'password123', 'STUDENT', 'mnakato@students.ndejje.ac.ug');
+('stu', 'stu123', 'STUDENT', 'nakawala@students.ndejje.ac.ug');
 
 INSERT INTO persons (user_id, first_name, last_name, date_of_birth, gender, phone_number) VALUES 
-(4, 'John', 'Doe', '2002-03-10', 'MALE', '+256703333333'),
-(5, 'Mary', 'Nakato', '2001-07-25', 'FEMALE', '+256704444444');
+(3, 'Grace', 'Nakawala', '2003-05-10', 'FEMALE', '+256702345678');
 
 INSERT INTO students (person_id, registration_number, program, year_of_study, semester, enrollment_date, fee_balance) VALUES 
-(4, 'BIT/2023/001', 'Bachelor of Information Technology', 2, 1, '2023-08-01', 500000.00),
-(5, 'BCS/2023/002', 'Bachelor of Computer Science', 2, 1, '2023-08-01', 300000.00);
+(3, 'BIT/2023/001', 'Bachelor of Information Technology', 2, 1, '2023-08-01', 450000.00);
 
 -- Insert Sample Courses
 INSERT INTO courses (course_code, course_name, description, credits, department, semester, year_level, lecturer_id) VALUES 
 ('BIT2104', 'Object Oriented Programming (Java)', 'Advanced Java programming with OOP concepts', 4, 'Computing', 1, 2, 1),
-('BCS2102', 'Database Management Systems', 'Relational database design and SQL', 4, 'Computing', 1, 2, 2),
+('BCS2102', 'Database Management Systems', 'Relational database design and SQL', 4, 'Computing', 1, 2, 1),
 ('BIT2103', 'Data Structures and Algorithms', 'Core data structures and algorithmic thinking', 4, 'Computing', 1, 2, 1),
-('BCS2101', 'Web Technologies', 'HTML, CSS, JavaScript and web development', 3, 'Computing', 1, 2, 2);
+('BCS2101', 'Web Technologies', 'HTML, CSS, JavaScript and web development', 3, 'Computing', 1, 2, 1);
 
 -- Insert Sample Course Registrations
 INSERT INTO course_registrations (student_id, course_id, academic_year, semester, status) VALUES 
 (1, 1, '2025/2026', 1, 'REGISTERED'),
-(1, 2, '2025/2026', 1, 'REGISTERED'),
-(2, 1, '2025/2026', 1, 'REGISTERED'),
-(2, 3, '2025/2026', 1, 'REGISTERED');
+(1, 2, '2025/2026', 1, 'REGISTERED');
 
 -- Insert Sample Grades
 INSERT INTO grades (registration_id, coursework_marks, exam_marks, total_marks, letter_grade, grade_points, uploaded_by) VALUES 
-(1, 28.00, 65.00, 93.00, 'A', 5.00, 1),
-(3, 25.00, 60.00, 85.00, 'A', 5.00, 1);
+(1, 28.00, 65.00, 93.00, 'A', 5.00, 1);
 
 -- Insert Sample Announcement
 INSERT INTO announcements (title, content, posted_by, target_audience) VALUES 
@@ -357,6 +348,4 @@ END //
 
 DELIMITER ;
 
--- Grant privileges (adjust username as needed)
--- GRANT ALL PRIVILEGES ON scms_db.* TO 'scms_user'@'localhost' IDENTIFIED BY 'scms_password';
--- FLUSH PRIVILEGES;
+

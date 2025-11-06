@@ -96,7 +96,18 @@ public class StudentRegistrationForm extends JFrame {
                 "Bachelor of Information Technology",
                 "Bachelor of Computer Science",
                 "Bachelor of Software Engineering",
-                "Bachelor of Information Systems"
+                "Bachelor of Information Systems",
+                "Bachelor of Business Administration",
+                "Bachelor of Accounting",
+                "Bachelor of Marketing",
+                "Bachelor of Finance",
+                "Bachelor of Civil Engineering",
+                "Bachelor of Mechanical Engineering",
+                "Bachelor of Electrical Engineering",
+                "Bachelor of Architecture",
+                "Bachelor of Medicine",
+                "Bachelor of Pharmacy",
+                "Bachelor of Nursing"
         };
         programCombo = createComboBox(programs);
         formPanel.add(programCombo, gbc);

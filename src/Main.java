@@ -4,10 +4,7 @@ import javax.swing.*;
 
 /**
  * Main entry point for Smart Campus Management System (SCMS)
- * Ndejje University - Academic Year 2025/2026
  * 
- * @author Your Group Name
- * @version 1.0
  */
 public class Main {
     public static void main(String[] args) {
@@ -25,6 +22,14 @@ public class Main {
                 System.out.println("===================================");
                 System.out.println("Smart Campus Management System (SCMS)");
                 System.out.println("Ndejje University");
+                System.out.println("===================================");
+
+                System.out.println("GROUP 1 MEMBERS:");
+                System.out.println("NYOMORE HENRY\t\t23/2/370/W/736");
+                System.out.println("MUKIIBI SHADIA\t\t23/2/370/W/620");
+                System.out.println("KISENGULA LEONARD\t24/2/370/W/513");
+                System.out.println("OBOTH JULIUS CARLTON\t24/2/370/W/527");
+                System.out.println("AIJUKA ARNOLD");
                 System.out.println("===================================");
                 System.out.println("Starting application...");
 

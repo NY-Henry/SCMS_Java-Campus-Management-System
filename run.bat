@@ -4,6 +4,16 @@ REM Smart Campus Management System - Windows
 REM Compilation and Execution Script
 REM ============================================
 
+REM GROUP MEMBERS
+REM ============================================
+REM GROUP 1
+REM NYOMORE HENRY        - 23/2/370/W/736
+REM MUKIIBI SHADIA      - 23/2/370/W/620
+REM KISENGULA LEONARD   - 24/2/370/W/513
+REM OBOTH JULIUS CARLTON - 24/2/370/W/527
+REM AIJUKA ARNOLD
+REM ============================================
+
 echo.
 echo ========================================
 echo   SCMS - Smart Campus Management System
@@ -45,8 +55,8 @@ echo.
 echo ========================================
 echo   Login Credentials:
 echo   Admin: admin / admin123
-echo   Lecturer: lec001 / password123
-echo   Student: stu001 / password123
+echo   Lecturer: lec / lec123
+echo   Student: stu / stu123
 echo ========================================
 echo.
 

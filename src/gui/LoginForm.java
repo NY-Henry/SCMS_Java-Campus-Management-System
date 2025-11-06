@@ -31,7 +31,7 @@ public class LoginForm extends JFrame {
         MySQLDatabase db = MySQLDatabase.getInstance();
         if (!db.connect()) {
             JOptionPane.showMessageDialog(null,
-                    "Failed to connect to database!\nPlease check your database configuration.",
+                    "Failed to connect to database!\nPlease make sure the database server(eg. WAMP..) is running, and also the sql file in the database folder in the root our project was imported properly.",
                     "Database Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
@@ -67,10 +67,17 @@ public class LoginForm extends JFrame {
         titleLabel.setForeground(new Color(45, 45, 45));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel subtitleLabel = new JLabel("Campus Management System");
+        JLabel subtitleLabel = new JLabel("Smart Campus Management System");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         subtitleLabel.setForeground(new Color(120, 120, 120));
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Note label with HTML for line wrapping
+        JLabel noteLabel = new JLabel(
+                "<html><center>(**Check the HOW_To_RUN.txt file in our project folder<br>for the initial login credentials)</center></html>");
+        noteLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        noteLabel.setForeground(new Color(140, 140, 140));
+        noteLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Separator line
         JSeparator separator = new JSeparator();
@@ -159,7 +166,9 @@ public class LoginForm extends JFrame {
         loginPanel.add(titleLabel);
         loginPanel.add(Box.createRigidArea(new Dimension(0, 8)));
         loginPanel.add(subtitleLabel);
-        loginPanel.add(Box.createRigidArea(new Dimension(0, 35)));
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        loginPanel.add(noteLabel);
+        loginPanel.add(Box.createRigidArea(new Dimension(0, 25)));
         loginPanel.add(separator);
         loginPanel.add(Box.createRigidArea(new Dimension(0, 35)));
         loginPanel.add(usernameLabel);
