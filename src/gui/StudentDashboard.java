@@ -162,11 +162,11 @@ public class StudentDashboard extends JFrame {
             // Set new active button
             activeButton = button;
             button.setBackground(new Color(52, 73, 94));
-            
+
             // Execute the action
             action.actionPerformed(e);
         });
-        
+
         sidebar.add(button);
     }
 
