@@ -168,7 +168,5 @@ public class StudentFeeBalancePanel extends JPanel {
             tableModel.addRow(emptyRow);
         }
 
-        System.out.println("Loaded " + payments.size() + " payment records for student " +
-                student.getRegistrationNumber());
     }
 }
