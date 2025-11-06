@@ -156,41 +156,77 @@ public class LecturerDashboard extends JFrame {
     private void showDashboardHome() {
         contentPanel.removeAll();
 
-        JPanel homePanel = new JPanel();
-        homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
-        homePanel.setBackground(new Color(236, 240, 241));
+        JPanel homePanel = new JPanel(new BorderLayout());
+        homePanel.setBackground(Color.WHITE);
+        homePanel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
 
-        JLabel welcomeLabel = new JLabel("Welcome, Dr./Prof. " + lecturer.getLastName() + "!");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        welcomeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Top section - Welcome message
+        JPanel topSection = new JPanel(new BorderLayout());
+        topSection.setOpaque(false);
 
-        homePanel.add(welcomeLabel);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        JLabel welcomeLabel = new JLabel("Dashboard");
+        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 36));
+        welcomeLabel.setForeground(new Color(45, 45, 45));
 
-        // Info card
-        JPanel infoCard = new JPanel();
-        infoCard.setLayout(new BoxLayout(infoCard, BoxLayout.Y_AXIS));
-        infoCard.setBackground(Color.WHITE);
-        infoCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
-        infoCard.setMaximumSize(new Dimension(900, 250));
+        JLabel subtitleLabel = new JLabel("Welcome back, Dr./Prof. " + lecturer.getLastName());
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        subtitleLabel.setForeground(new Color(120, 120, 120));
 
-        JLabel infoTitle = new JLabel("Lecturer Information");
-        infoTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setOpaque(false);
+        titlePanel.add(welcomeLabel);
+        titlePanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        titlePanel.add(subtitleLabel);
 
-        addInfoLabel(infoCard, "Department: " + lecturer.getDepartment());
-        addInfoLabel(infoCard, "Specialization: " + lecturer.getSpecialization());
-        addInfoLabel(infoCard, "Office: " + lecturer.getOfficeLocation());
-        addInfoLabel(infoCard, "Status: " + lecturer.getStatus());
+        topSection.add(titlePanel, BorderLayout.WEST);
 
-        infoCard.add(infoTitle);
-        infoCard.add(Box.createRigidArea(new Dimension(0, 15)));
-        homePanel.add(infoCard);
+        // Info section - Clean list with lecturer data
+        JPanel infoSection = new JPanel();
+        infoSection.setLayout(new BoxLayout(infoSection, BoxLayout.Y_AXIS));
+        infoSection.setOpaque(false);
+        infoSection.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
 
-        contentPanel.add(homePanel, BorderLayout.NORTH);
+        infoSection.add(createInfoRow("Full Name", lecturer.getFullName()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Department", lecturer.getDepartment()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Specialization", lecturer.getSpecialization()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Office Location", lecturer.getOfficeLocation()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Status", lecturer.getStatus()));
+
+        // Main content panel
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setOpaque(false);
+        mainContent.add(topSection, BorderLayout.NORTH);
+        mainContent.add(infoSection, BorderLayout.CENTER);
+
+        homePanel.add(mainContent, BorderLayout.CENTER);
+
+        contentPanel.add(homePanel);
         contentPanel.revalidate();
         contentPanel.repaint();
+    }
+
+    private JPanel createInfoRow(String label, String value) {
+        JPanel row = new JPanel(new BorderLayout());
+        row.setOpaque(false);
+        row.setMaximumSize(new Dimension(600, 25));
+
+        JLabel labelText = new JLabel(label);
+        labelText.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        labelText.setForeground(new Color(120, 120, 120));
+
+        JLabel valueText = new JLabel(value != null ? value : "N/A");
+        valueText.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        valueText.setForeground(new Color(45, 45, 45));
+
+        row.add(labelText, BorderLayout.WEST);
+        row.add(valueText, BorderLayout.EAST);
+
+        return row;
     }
 
     private void addInfoLabel(JPanel panel, String text) {

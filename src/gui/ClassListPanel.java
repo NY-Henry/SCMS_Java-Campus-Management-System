@@ -29,35 +29,54 @@ public class ClassListPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+
+        // Top panel with title and view button
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
+
+        // Left section - Title and course selector
+        JPanel leftSection = new JPanel();
+        leftSection.setLayout(new BoxLayout(leftSection, BoxLayout.Y_AXIS));
+        leftSection.setOpaque(false);
 
         JLabel titleLabel = new JLabel("Class Lists");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Course selection panel
-        JPanel selectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        selectionPanel.setBackground(new Color(236, 240, 241));
+        // Course selection row
+        JPanel selectionRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        selectionRow.setOpaque(false);
+        selectionRow.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+        selectionRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel courseLabel = new JLabel("Select Course:");
-        courseLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+        courseLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        courseLabel.setForeground(new Color(120, 120, 120));
 
         courseCombo = new JComboBox<>();
-        courseCombo.setPreferredSize(new Dimension(400, 30));
+        courseCombo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        courseCombo.setPreferredSize(new Dimension(350, 32));
+        courseCombo.setBackground(Color.WHITE);
+        courseCombo.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
         loadCourses();
 
-        JButton viewButton = new JButton("View Students");
-        viewButton.setBackground(new Color(52, 152, 219));
-        viewButton.setForeground(Color.BLACK);
-        viewButton.setFont(new Font("Arial", Font.BOLD, 14));
-        viewButton.setBorder(BorderFactory.createRaisedBevelBorder());
-        viewButton.setPreferredSize(new Dimension(120, 35));
-        viewButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        viewButton.setFocusPainted(false);
+        selectionRow.add(courseLabel);
+        selectionRow.add(Box.createRigidArea(new Dimension(10, 0)));
+        selectionRow.add(courseCombo);
+
+        leftSection.add(titleLabel);
+        leftSection.add(selectionRow);
+
+        // Right section - View button
+        JButton viewButton = createMinimalButton("View Students", new Color(70, 130, 180));
         viewButton.addActionListener(e -> loadStudents());
 
-        selectionPanel.add(courseLabel);
-        selectionPanel.add(courseCombo);
-        selectionPanel.add(viewButton);
+        topPanel.add(leftSection, BorderLayout.WEST);
+        topPanel.add(viewButton, BorderLayout.EAST);
 
         // Students table
         String[] columns = { "Reg Number", "Student Name", "Status" };
@@ -69,24 +88,51 @@ public class ClassListPanel extends JPanel {
         };
 
         studentsTable = new JTable(tableModel);
-        studentsTable.setRowHeight(30);
-        studentsTable.setFont(new Font("Arial", Font.PLAIN, 13));
-        studentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
-        studentsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        studentsTable.getTableHeader().setForeground(Color.BLACK);
+        studentsTable.setRowHeight(40);
+        studentsTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        studentsTable.setShowVerticalLines(false);
+        studentsTable.setGridColor(new Color(240, 240, 245));
+        studentsTable.setSelectionBackground(new Color(245, 247, 250));
+        studentsTable.setSelectionForeground(new Color(45, 45, 45));
+
+        // Minimalist table header
+        studentsTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        studentsTable.getTableHeader().setBackground(Color.WHITE);
+        studentsTable.getTableHeader().setForeground(new Color(120, 120, 120));
+        studentsTable.getTableHeader().setOpaque(true);
+        studentsTable.getTableHeader().setReorderingAllowed(false);
+        studentsTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        studentsTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         JScrollPane scrollPane = new JScrollPane(studentsTable);
-
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBackground(new Color(236, 240, 241));
-        topPanel.add(titleLabel);
-        topPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        topPanel.add(selectionPanel);
-        topPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void loadCourses() {

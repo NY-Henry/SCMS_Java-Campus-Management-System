@@ -21,57 +21,93 @@ public class StudentProfilePanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        // Title Panel with Edit Button
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(new Color(236, 240, 241));
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        // Top panel with title and edit button
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
 
         JLabel titleLabel = new JLabel("My Profile");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
 
-        JButton editButton = new JButton("Edit Profile");
-        editButton.setBackground(new Color(52, 152, 219));
-        editButton.setForeground(Color.WHITE);
-        editButton.setFont(new Font("Arial", Font.BOLD, 14));
-        editButton.setFocusPainted(false);
-        editButton.setBorderPainted(false);
-        editButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        JButton editButton = createMinimalButton("Edit Profile", new Color(70, 130, 180));
         editButton.addActionListener(e -> showEditProfileDialog());
 
-        titlePanel.add(titleLabel, BorderLayout.WEST);
-        titlePanel.add(editButton, BorderLayout.EAST);
+        topPanel.add(titleLabel, BorderLayout.WEST);
+        topPanel.add(editButton, BorderLayout.EAST);
 
-        // Profile card
-        JPanel profileCard = new JPanel();
-        profileCard.setLayout(new BoxLayout(profileCard, BoxLayout.Y_AXIS));
-        profileCard.setBackground(Color.WHITE);
-        profileCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(30, 30, 30, 30)));
-        profileCard.setMaximumSize(new Dimension(800, 600));
+        // Profile information section - Clean rows
+        JPanel profileSection = new JPanel();
+        profileSection.setLayout(new BoxLayout(profileSection, BoxLayout.Y_AXIS));
+        profileSection.setOpaque(false);
+        profileSection.setMaximumSize(new Dimension(800, Integer.MAX_VALUE));
 
-        addProfileField(profileCard, "Full Name", student.getFullName());
-        addProfileField(profileCard, "Registration Number", student.getRegistrationNumber());
-        addProfileField(profileCard, "Program", student.getProgram());
-        addProfileField(profileCard, "Year of Study", "Year " + student.getYearOfStudy());
-        addProfileField(profileCard, "Semester", "Semester " + student.getSemester());
-        addProfileField(profileCard, "Phone Number", student.getPhoneNumber());
-        addProfileField(profileCard, "Gender", student.getGender());
-        addProfileField(profileCard, "Status", student.getStatus());
-        addProfileField(profileCard, "GPA", String.format("%.2f", student.getGpa()));
-        addProfileField(profileCard, "Fee Balance", String.format("UGX %.2f", student.getFeeBalance()));
+        addProfileRow(profileSection, "Full Name", student.getFullName());
+        addProfileRow(profileSection, "Registration Number", student.getRegistrationNumber());
+        addProfileRow(profileSection, "Program", student.getProgram());
+        addProfileRow(profileSection, "Year of Study", "Year " + student.getYearOfStudy());
+        addProfileRow(profileSection, "Semester", "Semester " + student.getSemester());
+        addProfileRow(profileSection, "Phone Number", student.getPhoneNumber());
+        addProfileRow(profileSection, "Gender", student.getGender());
+        addProfileRow(profileSection, "Status", student.getStatus());
+        addProfileRow(profileSection, "GPA", String.format("%.2f", student.getGpa()));
+        addProfileRow(profileSection, "Fee Balance", String.format("UGX %.2f", student.getFeeBalance()));
 
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBackground(new Color(236, 240, 241));
-        titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        profileCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-        container.add(titlePanel);
-        container.add(profileCard);
+        // Wrapper for profile section
+        JPanel contentWrapper = new JPanel(new BorderLayout());
+        contentWrapper.setOpaque(false);
+        contentWrapper.add(topPanel, BorderLayout.NORTH);
+        contentWrapper.add(profileSection, BorderLayout.CENTER);
 
-        add(container, BorderLayout.NORTH);
+        add(contentWrapper, BorderLayout.NORTH);
+    }
+
+    private void addProfileRow(JPanel panel, String label, String value) {
+        JPanel rowPanel = new JPanel(new BorderLayout());
+        rowPanel.setOpaque(false);
+        rowPanel.setMaximumSize(new Dimension(800, 40));
+        rowPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(240, 240, 245)),
+                BorderFactory.createEmptyBorder(12, 0, 12, 0)));
+
+        JLabel labelComponent = new JLabel(label);
+        labelComponent.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        labelComponent.setForeground(new Color(120, 120, 120));
+
+        JLabel valueComponent = new JLabel(value != null ? value : "N/A");
+        valueComponent.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        valueComponent.setForeground(new Color(45, 45, 45));
+
+        rowPanel.add(labelComponent, BorderLayout.WEST);
+        rowPanel.add(valueComponent, BorderLayout.EAST);
+
+        panel.add(rowPanel);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void addProfileField(JPanel panel, String label, String value) {

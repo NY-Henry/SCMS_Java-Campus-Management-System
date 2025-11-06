@@ -83,6 +83,7 @@ public class StudentDashboard extends JFrame {
         userLabel.setForeground(Color.WHITE);
 
         JButton logoutBtn = new JButton("Logout");
+        logoutBtn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         logoutBtn.setBackground(new Color(231, 76, 60));
         logoutBtn.setForeground(Color.WHITE);
         logoutBtn.setFocusPainted(false);
@@ -176,72 +177,125 @@ public class StudentDashboard extends JFrame {
     private void showDashboardHome() {
         contentPanel.removeAll();
 
-        JPanel homePanel = new JPanel();
-        homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
-        homePanel.setBackground(new Color(236, 240, 241));
+        JPanel homePanel = new JPanel(new BorderLayout());
+        homePanel.setBackground(Color.WHITE);
+        homePanel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
 
-        // Welcome message
-        JLabel welcomeLabel = new JLabel("Welcome back, " + student.getFirstName() + "!");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        welcomeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Top section - Welcome message
+        JPanel topSection = new JPanel(new BorderLayout());
+        topSection.setOpaque(false);
 
-        homePanel.add(welcomeLabel);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        JLabel welcomeLabel = new JLabel("Dashboard");
+        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 36));
+        welcomeLabel.setForeground(new Color(45, 45, 45));
 
-        // Statistics cards
-        JPanel statsPanel = new JPanel(new GridLayout(1, 4, 20, 0));
-        statsPanel.setMaximumSize(new Dimension(1100, 120));
-        statsPanel.setOpaque(false);
+        JLabel subtitleLabel = new JLabel("Welcome back, " + student.getFirstName());
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        subtitleLabel.setForeground(new Color(120, 120, 120));
 
-        statsPanel.add(createStatCard("GPA", String.format("%.2f", student.getGpa()),
-                new Color(52, 152, 219)));
-        statsPanel.add(createStatCard("Year", "Year " + student.getYearOfStudy(),
-                new Color(155, 89, 182)));
-        statsPanel.add(createStatCard("Semester", "Semester " + student.getSemester(),
-                new Color(46, 204, 113)));
-        statsPanel.add(createStatCard("Fee Balance", String.format("UGX %.0f", student.getFeeBalance()),
-                new Color(231, 76, 60)));
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setOpaque(false);
+        titlePanel.add(welcomeLabel);
+        titlePanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        titlePanel.add(subtitleLabel);
 
-        homePanel.add(statsPanel);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        topSection.add(titlePanel, BorderLayout.WEST);
 
-        // Quick info
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(Color.WHITE);
-        infoPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
-        infoPanel.setMaximumSize(new Dimension(1100, 300));
+        // Info section - Clean list with all student data
+        JPanel infoSection = new JPanel();
+        infoSection.setLayout(new BoxLayout(infoSection, BoxLayout.Y_AXIS));
+        infoSection.setOpaque(false);
+        infoSection.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
 
-        JLabel infoTitle = new JLabel("Student Information");
-        infoTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        infoSection.add(createInfoRow("Registration Number", student.getRegistrationNumber()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Program", student.getProgram()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Year of Study", "Year " + student.getYearOfStudy()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Semester", "Semester " + student.getSemester()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("GPA", String.format("%.2f", student.getGpa())));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Fee Balance", String.format("%.0f UGX", student.getFeeBalance())));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Status", student.getStatus()));
+        infoSection.add(Box.createRigidArea(new Dimension(0, 12)));
+        infoSection.add(createInfoRow("Academic Standing", student.getAcademicStanding()));
 
-        JLabel regNum = new JLabel("Registration Number: " + student.getRegistrationNumber());
-        JLabel program = new JLabel("Program: " + student.getProgram());
-        JLabel status = new JLabel("Status: " + student.getStatus());
-        JLabel standing = new JLabel("Academic Standing: " + student.getAcademicStanding());
+        // Main content panel
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setOpaque(false);
+        mainContent.add(topSection, BorderLayout.NORTH);
+        mainContent.add(infoSection, BorderLayout.CENTER);
 
-        regNum.setFont(new Font("Arial", Font.PLAIN, 15));
-        program.setFont(new Font("Arial", Font.PLAIN, 15));
-        status.setFont(new Font("Arial", Font.PLAIN, 15));
-        standing.setFont(new Font("Arial", Font.PLAIN, 15));
+        homePanel.add(mainContent, BorderLayout.CENTER);
 
-        infoPanel.add(infoTitle);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        infoPanel.add(regNum);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 8)));
-        infoPanel.add(program);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 8)));
-        infoPanel.add(status);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 8)));
-        infoPanel.add(standing);
-
-        homePanel.add(infoPanel);
-
-        contentPanel.add(homePanel, BorderLayout.NORTH);
+        contentPanel.add(homePanel);
         contentPanel.revalidate();
         contentPanel.repaint();
+    }
+
+    private JPanel createMinimalStatCard(String title, String value, String icon) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(new Color(250, 250, 252));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)));
+
+        // Icon
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font("Arial Unicode MS", Font.PLAIN, 28));
+        iconLabel.setForeground(new Color(100, 100, 120));
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+
+        // Value
+        JLabel valueLabel = new JLabel(value);
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        valueLabel.setForeground(new Color(45, 45, 45));
+
+        // Title
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        titleLabel.setForeground(new Color(120, 120, 120));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+
+        // Arrange vertically
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
+
+        iconLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        contentPanel.add(iconLabel);
+        contentPanel.add(valueLabel);
+        contentPanel.add(titleLabel);
+
+        card.add(contentPanel, BorderLayout.WEST);
+
+        return card;
+    }
+
+    private JPanel createInfoRow(String label, String value) {
+        JPanel row = new JPanel(new BorderLayout());
+        row.setOpaque(false);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+
+        JLabel labelText = new JLabel(label);
+        labelText.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        labelText.setForeground(new Color(120, 120, 120));
+
+        JLabel valueText = new JLabel(value);
+        valueText.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        valueText.setForeground(new Color(45, 45, 45));
+
+        row.add(labelText, BorderLayout.WEST);
+        row.add(valueText, BorderLayout.EAST);
+
+        return row;
     }
 
     /**

@@ -3,6 +3,7 @@ package gui;
 import models.Lecturer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class LecturerProfilePanel extends JPanel {
@@ -15,53 +16,58 @@ public class LecturerProfilePanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(new EmptyBorder(30, 40, 30, 40));
 
+        // Title
         JLabel titleLabel = new JLabel("My Profile");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
 
-        JPanel profileCard = new JPanel();
-        profileCard.setLayout(new BoxLayout(profileCard, BoxLayout.Y_AXIS));
-        profileCard.setBackground(Color.WHITE);
-        profileCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(30, 30, 30, 30)));
-        profileCard.setMaximumSize(new Dimension(800, 500));
+        add(titleLabel, BorderLayout.NORTH);
 
-        addProfileField(profileCard, "Full Name", lecturer.getFullName());
-        addProfileField(profileCard, "Employee Number", lecturer.getEmployeeNumber());
-        addProfileField(profileCard, "Department", lecturer.getDepartment());
-        addProfileField(profileCard, "Specialization", lecturer.getSpecialization());
-        addProfileField(profileCard, "Qualification", lecturer.getQualification());
-        addProfileField(profileCard, "Office Location", lecturer.getOfficeLocation());
-        addProfileField(profileCard, "Phone Number", lecturer.getPhoneNumber());
-        addProfileField(profileCard, "Status", lecturer.getStatus());
+        // Profile content panel
+        JPanel profileContent = new JPanel();
+        profileContent.setLayout(new BoxLayout(profileContent, BoxLayout.Y_AXIS));
+        profileContent.setBackground(Color.WHITE);
 
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBackground(new Color(236, 240, 241));
-        container.add(titleLabel);
-        container.add(Box.createRigidArea(new Dimension(0, 20)));
-        container.add(profileCard);
+        addProfileRow(profileContent, "Full Name", lecturer.getFullName());
+        addProfileRow(profileContent, "Employee Number", lecturer.getEmployeeNumber());
+        addProfileRow(profileContent, "Department", lecturer.getDepartment());
+        addProfileRow(profileContent, "Specialization", lecturer.getSpecialization());
+        addProfileRow(profileContent, "Qualification", lecturer.getQualification());
+        addProfileRow(profileContent, "Office Location", lecturer.getOfficeLocation());
+        addProfileRow(profileContent, "Phone Number", lecturer.getPhoneNumber());
+        addProfileRow(profileContent, "Status", lecturer.getStatus());
 
-        add(container, BorderLayout.NORTH);
+        JScrollPane scrollPane = new JScrollPane(profileContent);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void addProfileField(JPanel panel, String label, String value) {
-        JPanel fieldPanel = new JPanel(new GridLayout(1, 2, 20, 0));
-        fieldPanel.setBackground(Color.WHITE);
-        fieldPanel.setMaximumSize(new Dimension(740, 35));
+    private void addProfileRow(JPanel panel, String label, String value) {
+        JPanel rowPanel = new JPanel(new BorderLayout());
+        rowPanel.setBackground(Color.WHITE);
+        rowPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)),
+                new EmptyBorder(15, 0, 15, 0)));
+        rowPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
-        JLabel labelComponent = new JLabel(label + ":");
-        labelComponent.setFont(new Font("Arial", Font.BOLD, 15));
+        JLabel labelComponent = new JLabel(label);
+        labelComponent.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        labelComponent.setForeground(new Color(120, 120, 120));
+        labelComponent.setPreferredSize(new Dimension(180, 30));
 
         JLabel valueComponent = new JLabel(value != null ? value : "N/A");
-        valueComponent.setFont(new Font("Arial", Font.PLAIN, 15));
+        valueComponent.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        valueComponent.setForeground(new Color(45, 45, 45));
 
-        fieldPanel.add(labelComponent);
-        fieldPanel.add(valueComponent);
+        rowPanel.add(labelComponent, BorderLayout.WEST);
+        rowPanel.add(valueComponent, BorderLayout.CENTER);
 
-        panel.add(fieldPanel);
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
+        panel.add(rowPanel);
     }
 }

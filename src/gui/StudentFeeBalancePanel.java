@@ -29,43 +29,66 @@ public class StudentFeeBalancePanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        // Title
-        JLabel titleLabel = new JLabel("Fee Balance & Payment History");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        // Top panel with title, balance info, and refresh button
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
 
-        // Balance Card Panel
-        JPanel balancePanel = new JPanel(new GridLayout(1, 2, 20, 0));
-        balancePanel.setBackground(new Color(236, 240, 241));
-        balancePanel.setMaximumSize(new Dimension(900, 150));
-        balancePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        // Left section - Title and balance info
+        JPanel leftSection = new JPanel();
+        leftSection.setLayout(new BoxLayout(leftSection, BoxLayout.Y_AXIS));
+        leftSection.setOpaque(false);
 
-        // Current Balance Card
-        JPanel currentBalanceCard = createInfoCard(
-                "Current Balance",
+        JLabel titleLabel = new JLabel("Fee Balance");
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Balance info rows
+        JPanel infoRows = new JPanel();
+        infoRows.setLayout(new BoxLayout(infoRows, BoxLayout.Y_AXIS));
+        infoRows.setOpaque(false);
+        infoRows.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+
+        JPanel balanceRow = createInfoRow("Current Balance",
                 String.format("UGX %.2f", student.getFeeBalance()),
-                student.getFeeBalance() > 0 ? new Color(231, 76, 60) : new Color(46, 204, 113));
+                student.getFeeBalance() > 0 ? new Color(220, 80, 80) : new Color(70, 130, 180));
 
-        // Total Paid Card
-        JPanel totalPaidCard = createInfoCard(
-                "Total Paid",
-                "UGX 0.00",
-                new Color(46, 204, 113));
-        // Get the valuePanel (component 2) and then the label inside it
-        totalPaidLabel = (JLabel) ((JPanel) totalPaidCard.getComponent(2)).getComponent(0);
+        JPanel totalPaidRow = createInfoRow("Total Paid", "UGX 0.00", new Color(70, 130, 180));
+        // Get the value label for later updates
+        totalPaidLabel = (JLabel) ((JPanel) totalPaidRow.getComponent(1)).getComponent(0);
 
-        balancePanel.add(currentBalanceCard);
-        balancePanel.add(totalPaidCard);
+        infoRows.add(balanceRow);
+        infoRows.add(Box.createRigidArea(new Dimension(0, 10)));
+        infoRows.add(totalPaidRow);
 
-        // Payment History Table
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(new Color(236, 240, 241));
+        leftSection.add(titleLabel);
+        leftSection.add(infoRows);
+
+        // Right section - Refresh button
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        buttonPanel.setOpaque(false);
+
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
+        refreshButton.addActionListener(e -> loadPaymentHistory());
+
+        buttonPanel.add(refreshButton);
+
+        topPanel.add(leftSection, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
+
+        // Payment History Section
+        JPanel historySection = new JPanel(new BorderLayout());
+        historySection.setOpaque(false);
+        historySection.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
         JLabel historyLabel = new JLabel("Payment History");
-        historyLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        historyLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        historyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        historyLabel.setForeground(new Color(45, 45, 45));
+        historyLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
         String[] columnNames = { "Date", "Amount", "Method", "Reference", "Purpose", "Year", "Semester" };
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -76,13 +99,21 @@ public class StudentFeeBalancePanel extends JPanel {
         };
 
         paymentsTable = new JTable(tableModel);
-        paymentsTable.setRowHeight(30);
-        paymentsTable.setFont(new Font("Arial", Font.PLAIN, 13));
-        paymentsTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
-        paymentsTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        paymentsTable.getTableHeader().setForeground(Color.BLACK);
-        paymentsTable.setSelectionBackground(new Color(52, 152, 219));
-        paymentsTable.setSelectionForeground(Color.WHITE);
+        paymentsTable.setRowHeight(40);
+        paymentsTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        paymentsTable.setShowVerticalLines(false);
+        paymentsTable.setGridColor(new Color(240, 240, 245));
+        paymentsTable.setSelectionBackground(new Color(245, 247, 250));
+        paymentsTable.setSelectionForeground(new Color(45, 45, 45));
+
+        // Minimalist table header
+        paymentsTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        paymentsTable.getTableHeader().setBackground(Color.WHITE);
+        paymentsTable.getTableHeader().setForeground(new Color(120, 120, 120));
+        paymentsTable.getTableHeader().setOpaque(true);
+        paymentsTable.getTableHeader().setReorderingAllowed(false);
+        paymentsTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        paymentsTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         // Set column widths
         paymentsTable.getColumnModel().getColumn(0).setPreferredWidth(120); // Date
@@ -94,22 +125,64 @@ public class StudentFeeBalancePanel extends JPanel {
         paymentsTable.getColumnModel().getColumn(6).setPreferredWidth(80); // Semester
 
         JScrollPane scrollPane = new JScrollPane(paymentsTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
-        tablePanel.add(historyLabel, BorderLayout.NORTH);
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        historySection.add(historyLabel, BorderLayout.NORTH);
+        historySection.add(scrollPane, BorderLayout.CENTER);
 
-        // Main layout
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBackground(new Color(236, 240, 241));
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        balancePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        topPanel.add(titleLabel);
-        topPanel.add(balancePanel);
+        // Main content
+        JPanel mainContent = new JPanel(new BorderLayout());
+        mainContent.setOpaque(false);
+        mainContent.add(topPanel, BorderLayout.NORTH);
+        mainContent.add(historySection, BorderLayout.CENTER);
 
-        add(topPanel, BorderLayout.NORTH);
-        add(tablePanel, BorderLayout.CENTER);
+        add(mainContent, BorderLayout.CENTER);
+    }
+
+    private JPanel createInfoRow(String label, String value, Color valueColor) {
+        JPanel row = new JPanel(new BorderLayout());
+        row.setOpaque(false);
+        row.setMaximumSize(new Dimension(500, 25));
+
+        JLabel labelText = new JLabel(label);
+        labelText.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        labelText.setForeground(new Color(120, 120, 120));
+
+        JPanel valuePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        valuePanel.setOpaque(false);
+        JLabel valueText = new JLabel(value);
+        valueText.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        valueText.setForeground(valueColor);
+        valuePanel.add(valueText);
+
+        row.add(labelText, BorderLayout.WEST);
+        row.add(valuePanel, BorderLayout.EAST);
+
+        return row;
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private JPanel createInfoCard(String title, String value, Color valueColor) {

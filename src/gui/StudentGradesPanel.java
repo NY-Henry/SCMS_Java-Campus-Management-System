@@ -29,12 +29,48 @@ public class StudentGradesPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        // Title
+        // Top panel with title, GPA, and buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
+
+        // Left section - Title and GPA
+        JPanel leftSection = new JPanel();
+        leftSection.setLayout(new BoxLayout(leftSection, BoxLayout.Y_AXIS));
+        leftSection.setOpaque(false);
+
         JLabel titleLabel = new JLabel("My Grades");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel gpaLabel = new JLabel(String.format("Current GPA: %.2f", student.getGpa()));
+        gpaLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        gpaLabel.setForeground(new Color(120, 120, 120));
+        gpaLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        gpaLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+
+        leftSection.add(titleLabel);
+        leftSection.add(gpaLabel);
+
+        // Action buttons panel (top right)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+
+        JButton exportButton = createMinimalButton("Export CSV", new Color(70, 130, 180));
+        exportButton.addActionListener(e -> exportGrades());
+
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
+        refreshButton.addActionListener(e -> loadGrades());
+
+        buttonPanel.add(exportButton);
+        buttonPanel.add(refreshButton);
+
+        topPanel.add(leftSection, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
 
         // Table
         String[] columns = { "Course Code", "Course Name", "Coursework", "Exam", "Total", "Grade", "Points" };
@@ -46,56 +82,51 @@ public class StudentGradesPanel extends JPanel {
         };
 
         gradesTable = new JTable(tableModel);
-        gradesTable.setRowHeight(30);
-        gradesTable.setFont(new Font("Arial", Font.PLAIN, 13));
-        gradesTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
-        gradesTable.getTableHeader().setBackground(new Color(52, 73, 94));
-        gradesTable.getTableHeader().setForeground(Color.BLACK);
+        gradesTable.setRowHeight(40);
+        gradesTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        gradesTable.setShowVerticalLines(false);
+        gradesTable.setGridColor(new Color(240, 240, 245));
+        gradesTable.setSelectionBackground(new Color(245, 247, 250));
+        gradesTable.setSelectionForeground(new Color(45, 45, 45));
+
+        // Minimalist table header
+        gradesTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        gradesTable.getTableHeader().setBackground(Color.WHITE);
+        gradesTable.getTableHeader().setForeground(new Color(120, 120, 120));
+        gradesTable.getTableHeader().setOpaque(true);
+        gradesTable.getTableHeader().setReorderingAllowed(false);
+        gradesTable.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        gradesTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
 
         JScrollPane scrollPane = new JScrollPane(gradesTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
-
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.setBackground(new Color(236, 240, 241));
-
-        JButton exportButton = new JButton("Export to CSV");
-        exportButton.setBackground(new Color(46, 204, 113));
-        exportButton.setForeground(Color.WHITE);
-        exportButton.setFocusPainted(false);
-        exportButton.setBorderPainted(false);
-        exportButton.addActionListener(e -> exportGrades());
-
-        JButton refreshButton = new JButton("Refresh");
-        refreshButton.setBackground(new Color(52, 152, 219));
-        refreshButton.setForeground(Color.WHITE);
-        refreshButton.setFocusPainted(false);
-        refreshButton.setBorderPainted(false);
-        refreshButton.addActionListener(e -> loadGrades());
-
-        buttonPanel.add(exportButton);
-        buttonPanel.add(refreshButton);
-
-        // Summary panel
-        JPanel summaryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        summaryPanel.setBackground(new Color(236, 240, 241));
-        summaryPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-
-        JLabel gpaLabel = new JLabel(String.format("Current GPA: %.2f", student.getGpa()));
-        gpaLabel.setFont(new Font("Arial", Font.BOLD, 16));
-
-        summaryPanel.add(gpaLabel);
-
-        // Layout
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBackground(new Color(236, 240, 241));
-        topPanel.add(titleLabel);
-        topPanel.add(summaryPanel);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void loadGrades() {

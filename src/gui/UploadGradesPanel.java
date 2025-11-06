@@ -35,99 +35,180 @@ public class UploadGradesPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(236, 240, 241));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
+        // Title
         JLabel titleLabel = new JLabel("Upload Grades");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
 
         // Form panel
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(189, 195, 199)),
-                BorderFactory.createEmptyBorder(30, 40, 30, 40)));
+        formPanel.setOpaque(false);
         formPanel.setMaximumSize(new Dimension(700, 500));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(12, 0, 12, 0);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        int row = 0;
 
         // Course selection
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        formPanel.add(new JLabel("Select Course:"), gbc);
+        gbc.gridy = row;
+        gbc.weightx = 0.3;
+        JLabel courseLabel = new JLabel("Select Course");
+        courseLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        courseLabel.setForeground(new Color(120, 120, 120));
+        formPanel.add(courseLabel, gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 0.7;
         courseCombo = new JComboBox<>();
-        courseCombo.setPreferredSize(new Dimension(300, 30));
+        courseCombo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        courseCombo.setPreferredSize(new Dimension(400, 35));
+        courseCombo.setBackground(Color.WHITE);
+        courseCombo.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
         formPanel.add(courseCombo, gbc);
+
+        row++;
 
         // Student selection
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        formPanel.add(new JLabel("Select Student:"), gbc);
+        gbc.gridy = row;
+        gbc.weightx = 0.3;
+        JLabel studentLabel = new JLabel("Select Student");
+        studentLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        studentLabel.setForeground(new Color(120, 120, 120));
+        formPanel.add(studentLabel, gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 0.7;
         studentCombo = new JComboBox<>();
-        studentCombo.setPreferredSize(new Dimension(300, 30));
+        studentCombo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        studentCombo.setPreferredSize(new Dimension(400, 35));
+        studentCombo.setBackground(Color.WHITE);
+        studentCombo.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
         formPanel.add(studentCombo, gbc);
 
         // Load courses and add listener AFTER both combos are initialized
         loadCourses();
         courseCombo.addActionListener(e -> loadStudentsForCourse());
 
+        row++;
+
         // Coursework marks
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        formPanel.add(new JLabel("Coursework Marks (Max 40):"), gbc);
+        gbc.gridy = row;
+        gbc.weightx = 0.3;
+        JLabel courseworkLabel = new JLabel("Coursework Marks (Max 40)");
+        courseworkLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        courseworkLabel.setForeground(new Color(120, 120, 120));
+        formPanel.add(courseworkLabel, gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 0.7;
         courseworkField = new JTextField();
-        courseworkField.setPreferredSize(new Dimension(300, 30));
+        courseworkField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        courseworkField.setPreferredSize(new Dimension(400, 35));
+        courseworkField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
         formPanel.add(courseworkField, gbc);
+
+        row++;
 
         // Exam marks
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(new JLabel("Exam Marks (Max 60):"), gbc);
+        gbc.gridy = row;
+        gbc.weightx = 0.3;
+        JLabel examLabel = new JLabel("Exam Marks (Max 60)");
+        examLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        examLabel.setForeground(new Color(120, 120, 120));
+        formPanel.add(examLabel, gbc);
 
         gbc.gridx = 1;
+        gbc.weightx = 0.7;
         examField = new JTextField();
-        examField.setPreferredSize(new Dimension(300, 30));
+        examField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        examField.setPreferredSize(new Dimension(400, 35));
+        examField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
         formPanel.add(examField, gbc);
+
+        row++;
 
         // Remarks
         gbc.gridx = 0;
-        gbc.gridy = 4;
-        formPanel.add(new JLabel("Remarks:"), gbc);
+        gbc.gridy = row;
+        gbc.weightx = 0.3;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        JLabel remarksLabel = new JLabel("Remarks");
+        remarksLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        remarksLabel.setForeground(new Color(120, 120, 120));
+        formPanel.add(remarksLabel, gbc);
 
         gbc.gridx = 1;
-        remarksArea = new JTextArea(3, 20);
+        gbc.weightx = 0.7;
+        gbc.anchor = GridBagConstraints.WEST;
+        remarksArea = new JTextArea(4, 20);
+        remarksArea.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         remarksArea.setLineWrap(true);
         remarksArea.setWrapStyleWord(true);
+        remarksArea.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)));
         JScrollPane remarksScroll = new JScrollPane(remarksArea);
+        remarksScroll.setPreferredSize(new Dimension(400, 90));
+        remarksScroll.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
         formPanel.add(remarksScroll, gbc);
+
+        row++;
 
         // Submit button
         gbc.gridx = 1;
-        gbc.gridy = 5;
-        JButton submitButton = new JButton("Upload Grade");
-        submitButton.setBackground(new Color(46, 204, 113));
-        submitButton.setForeground(Color.BLACK);
-        submitButton.setFocusPainted(false);
-        submitButton.setPreferredSize(new Dimension(150, 35));
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(20, 0, 0, 0);
+        JButton submitButton = createMinimalButton("Upload Grade", new Color(70, 130, 180));
         submitButton.addActionListener(e -> uploadGrade());
         formPanel.add(submitButton, gbc);
 
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBackground(new Color(236, 240, 241));
-        container.add(titleLabel);
-        container.add(Box.createRigidArea(new Dimension(0, 20)));
-        container.add(formPanel);
+        // Container
+        JPanel container = new JPanel(new BorderLayout());
+        container.setOpaque(false);
+        container.add(titleLabel, BorderLayout.NORTH);
+        container.add(formPanel, BorderLayout.CENTER);
 
         add(container, BorderLayout.NORTH);
+    }
+
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
     }
 
     private void loadCourses() {
