@@ -34,270 +34,343 @@ public class ReportsPanel extends JPanel {
 
     public ReportsPanel(MySQLDatabase db, PaymentService paymentService) {
         this.db = db;
-        setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(236, 240, 241));
-        setBorder(new EmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         initializeUI();
         loadReportData();
     }
 
     private void initializeUI() {
-        // Title panel
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(new Color(236, 240, 241));
+        // Top panel with title and buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        JLabel titleLabel = new JLabel("System Reports & Analytics");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLabel.setForeground(new Color(41, 128, 185));
-        titlePanel.add(titleLabel, BorderLayout.WEST);
+        JLabel titleLabel = new JLabel("Reports & Analytics");
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        titleLabel.setForeground(new Color(45, 45, 45));
 
-        // Refresh button
-        JButton refreshButton = new JButton("Refresh Data");
-        refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
-        refreshButton.setBackground(new Color(46, 204, 113));
-        refreshButton.setForeground(Color.BLACK);
-        refreshButton.setFocusPainted(false);
-        refreshButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setOpaque(false);
+
+        JButton exportBtn = createMinimalButton("Export", new Color(70, 130, 180));
+        exportBtn.addActionListener(e -> exportStudentReport());
+
+        JButton refreshButton = createMinimalButton("Refresh", new Color(100, 100, 110));
         refreshButton.addActionListener(e -> loadReportData());
-        titlePanel.add(refreshButton, BorderLayout.EAST);
 
-        add(titlePanel, BorderLayout.NORTH);
+        buttonPanel.add(exportBtn);
+        buttonPanel.add(refreshButton);
 
-        // Main content with scroll
-        JPanel mainContent = new JPanel();
-        mainContent.setLayout(new BoxLayout(mainContent, BoxLayout.Y_AXIS));
-        mainContent.setBackground(new Color(236, 240, 241));
+        topPanel.add(titleLabel, BorderLayout.WEST);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
 
-        // Student Statistics Section
-        mainContent.add(createStudentReportSection());
-        mainContent.add(Box.createVerticalStrut(20));
+        add(topPanel, BorderLayout.NORTH);
 
-        // Financial Reports Section
-        mainContent.add(createFinancialReportSection());
-        mainContent.add(Box.createVerticalStrut(20));
+        // Main content with tabbed sections
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tabbedPane.setOpaque(false);
 
-        // Academic Reports Section
-        mainContent.add(createAcademicReportSection());
-        mainContent.add(Box.createVerticalStrut(20));
+        tabbedPane.addTab("Students", createStudentReportTable());
+        tabbedPane.addTab("Financial", createFinancialReportTable());
+        tabbedPane.addTab("Academic", createAcademicReportTable());
+        tabbedPane.addTab("System", createSystemActivityTable());
 
-        // System Activity Section
-        mainContent.add(createSystemActivitySection());
-        mainContent.add(Box.createVerticalStrut(20));
+        add(tabbedPane, BorderLayout.CENTER);
+    }
 
-        // Export Options Section
-        mainContent.add(createExportSection());
+    private JButton createMinimalButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        JScrollPane scrollPane = new JScrollPane(mainContent);
-        scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        add(scrollPane, BorderLayout.CENTER);
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
+    }
+
+    private JPanel createStudentReportTable() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        String[] columns = { "Metric", "Count" };
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable table = createMinimalTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createFinancialReportTable() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        String[] columns = { "Metric", "Amount" };
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable table = createMinimalTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createAcademicReportTable() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        String[] columns = { "Metric", "Count" };
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable table = createMinimalTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createSystemActivityTable() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        String[] columns = { "Metric", "Count" };
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable table = createMinimalTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 235), 1));
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JTable createMinimalTable(DefaultTableModel model) {
+        JTable table = new JTable(model);
+        table.setRowHeight(40);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        table.setShowVerticalLines(false);
+        table.setGridColor(new Color(240, 240, 245));
+        table.setSelectionBackground(new Color(245, 247, 250));
+        table.setSelectionForeground(new Color(45, 45, 45));
+
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        table.getTableHeader().setBackground(Color.WHITE);
+        table.getTableHeader().setForeground(new Color(120, 120, 120));
+        table.getTableHeader().setOpaque(true);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.getTableHeader().setPreferredSize(new Dimension(0, 45));
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 235)));
+
+        return table;
     }
 
     private JPanel createStudentReportSection() {
-        JPanel section = new JPanel(new GridLayout(2, 2, 15, 15));
-        section.setBackground(Color.WHITE);
-        section.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-                "Student Statistics",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 16),
-                new Color(52, 152, 219)));
-        section.setBorder(BorderFactory.createCompoundBorder(
-                section.getBorder(),
-                new EmptyBorder(15, 15, 15, 15)));
+        JPanel section = new JPanel(new GridLayout(2, 2, 20, 20));
+        section.setOpaque(false);
+        section.setMaximumSize(new Dimension(Integer.MAX_VALUE, 280));
 
         // Total Students Card
         totalStudentsLabel = new JLabel("0");
-        section.add(createStatCard("Total Students", totalStudentsLabel, new Color(52, 152, 219)));
+        section.add(createMinimalStatCard("Total Students", totalStudentsLabel, "\u25CF", new Color(70, 130, 180)));
 
         // Active Students Card
         activeStudentsLabel = new JLabel("0");
-        section.add(createStatCard("Active Students", activeStudentsLabel, new Color(46, 204, 113)));
+        section.add(createMinimalStatCard("Active Students", activeStudentsLabel, "\u25CF", new Color(100, 180, 100)));
 
-        // Inactive Students (calculated)
+        // Inactive Students
         JLabel inactiveStudentsLabel = new JLabel("0");
-        section.add(createStatCard("Inactive Students", inactiveStudentsLabel, new Color(231, 76, 60)));
+        section.add(
+                createMinimalStatCard("Inactive Students", inactiveStudentsLabel, "\u25CF", new Color(200, 100, 100)));
 
-        // Students by Program (placeholder)
-        JButton viewDetailsButton = new JButton("View Detailed Report");
-        viewDetailsButton.setFont(new Font("Arial", Font.BOLD, 14));
-        viewDetailsButton.setBackground(new Color(52, 152, 219));
-        viewDetailsButton.setForeground(Color.BLACK);
-        viewDetailsButton.setFocusPainted(false);
-        viewDetailsButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // View Details Button Card
+        JPanel buttonCard = createMinimalStatCard("", new JLabel(""), "\u25B2", new Color(100, 100, 110));
+        JButton viewDetailsButton = createMinimalButton("View Details", new Color(100, 100, 110));
         viewDetailsButton.addActionListener(e -> showStudentDetailedReport());
-
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.add(viewDetailsButton);
-        section.add(buttonPanel);
+        buttonCard.removeAll();
+        buttonCard.setLayout(new GridBagLayout());
+        buttonCard.add(viewDetailsButton);
+        section.add(buttonCard);
 
         return section;
     }
 
     private JPanel createFinancialReportSection() {
-        JPanel section = new JPanel(new GridLayout(2, 2, 15, 15));
-        section.setBackground(Color.WHITE);
-        section.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(46, 204, 113), 2),
-                "Financial Reports",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 16),
-                new Color(46, 204, 113)));
-        section.setBorder(BorderFactory.createCompoundBorder(
-                section.getBorder(),
-                new EmptyBorder(15, 15, 15, 15)));
+        JPanel section = new JPanel(new GridLayout(2, 2, 20, 20));
+        section.setOpaque(false);
+        section.setMaximumSize(new Dimension(Integer.MAX_VALUE, 280));
 
         // Total Fees Expected
         totalFeesLabel = new JLabel("UGX 0.00");
-        section.add(createStatCard("Total Fees Expected", totalFeesLabel, new Color(52, 152, 219)));
+        section.add(createMinimalStatCard("Total Fees Expected", totalFeesLabel, "\u25A0", new Color(70, 130, 180)));
 
         // Total Collected
         totalPaidLabel = new JLabel("UGX 0.00");
-        section.add(createStatCard("Total Collected", totalPaidLabel, new Color(46, 204, 113)));
+        section.add(createMinimalStatCard("Total Collected", totalPaidLabel, "\u25A0", new Color(100, 180, 100)));
 
         // Outstanding Balance
         totalOutstandingLabel = new JLabel("UGX 0.00");
-        section.add(createStatCard("Outstanding Balance", totalOutstandingLabel, new Color(231, 76, 60)));
+        section.add(createMinimalStatCard("Outstanding Balance", totalOutstandingLabel, "\u25A0",
+                new Color(200, 100, 100)));
 
         // Total Transactions
         totalPaymentsLabel = new JLabel("0");
-        section.add(createStatCard("Total Transactions", totalPaymentsLabel, new Color(155, 89, 182)));
+        section.add(
+                createMinimalStatCard("Total Transactions", totalPaymentsLabel, "\u25A0", new Color(140, 100, 160)));
 
         return section;
     }
 
     private JPanel createAcademicReportSection() {
-        JPanel section = new JPanel(new GridLayout(2, 2, 15, 15));
-        section.setBackground(Color.WHITE);
-        section.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(155, 89, 182), 2),
-                "Academic Reports",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 16),
-                new Color(155, 89, 182)));
-        section.setBorder(BorderFactory.createCompoundBorder(
-                section.getBorder(),
-                new EmptyBorder(15, 15, 15, 15)));
+        JPanel section = new JPanel(new GridLayout(2, 2, 20, 20));
+        section.setOpaque(false);
+        section.setMaximumSize(new Dimension(Integer.MAX_VALUE, 280));
 
         // Total Courses
         totalCoursesLabel = new JLabel("0");
-        section.add(createStatCard("Total Courses", totalCoursesLabel, new Color(155, 89, 182)));
+        section.add(createMinimalStatCard("Total Courses", totalCoursesLabel, "\u25B2", new Color(140, 100, 160)));
 
         // Total Lecturers
         totalLecturersLabel = new JLabel("0");
-        section.add(createStatCard("Total Lecturers", totalLecturersLabel, new Color(52, 152, 219)));
+        section.add(createMinimalStatCard("Total Lecturers", totalLecturersLabel, "\u25B2", new Color(70, 130, 180)));
 
         // Course Registrations
         JLabel totalRegistrationsLabel = new JLabel("0");
-        section.add(createStatCard("Course Registrations", totalRegistrationsLabel, new Color(46, 204, 113)));
+        section.add(createMinimalStatCard("Course Registrations", totalRegistrationsLabel, "\u25B2",
+                new Color(100, 180, 100)));
 
         // Grades Entered
         JLabel totalGradesLabel = new JLabel("0");
-        section.add(createStatCard("Grades Entered", totalGradesLabel, new Color(230, 126, 34)));
+        section.add(createMinimalStatCard("Grades Entered", totalGradesLabel, "\u25B2", new Color(210, 140, 80)));
 
         return section;
     }
 
     private JPanel createSystemActivitySection() {
-        JPanel section = new JPanel(new GridLayout(1, 3, 15, 15));
-        section.setBackground(Color.WHITE);
-        section.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(230, 126, 34), 2),
-                "System Activity",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 16),
-                new Color(230, 126, 34)));
-        section.setBorder(BorderFactory.createCompoundBorder(
-                section.getBorder(),
-                new EmptyBorder(15, 15, 15, 15)));
+        JPanel section = new JPanel(new GridLayout(1, 3, 20, 20));
+        section.setOpaque(false);
+        section.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
 
         // Total Announcements
         totalAnnouncementsLabel = new JLabel("0");
-        section.add(createStatCard("Total Announcements", totalAnnouncementsLabel, new Color(52, 152, 219)));
+        section.add(createMinimalStatCard("Total Announcements", totalAnnouncementsLabel, "\u2713",
+                new Color(70, 130, 180)));
 
         // Active Announcements
         activeAnnouncementsLabel = new JLabel("0");
-        section.add(createStatCard("Active Announcements", activeAnnouncementsLabel, new Color(46, 204, 113)));
+        section.add(createMinimalStatCard("Active Announcements", activeAnnouncementsLabel, "\u2713",
+                new Color(100, 180, 100)));
 
         // Total Users
         JLabel totalUsersLabel = new JLabel("0");
-        section.add(createStatCard("Total Users", totalUsersLabel, new Color(155, 89, 182)));
+        section.add(createMinimalStatCard("Total Users", totalUsersLabel, "\u2713", new Color(140, 100, 160)));
 
         return section;
     }
 
     private JPanel createExportSection() {
-        JPanel section = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
-        section.setBackground(Color.WHITE);
-        section.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(127, 140, 141), 2),
-                "Export Reports",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 16),
-                new Color(127, 140, 141)));
-        section.setBorder(BorderFactory.createCompoundBorder(
-                section.getBorder(),
-                new EmptyBorder(15, 15, 15, 15)));
+        JPanel section = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        section.setOpaque(false);
+        section.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
-        JButton exportStudentsBtn = createExportButton("Export Student Report");
-        exportStudentsBtn.setBackground(Color.WHITE);
-        exportStudentsBtn.setForeground(Color.BLACK);
+        JButton exportStudentsBtn = createMinimalButton("Export Students", new Color(70, 130, 180));
         exportStudentsBtn.addActionListener(e -> exportStudentReport());
         section.add(exportStudentsBtn);
 
-        JButton exportFinancialBtn = createExportButton("Export Financial Report");
-        exportFinancialBtn.setBackground(Color.WHITE);
-        exportFinancialBtn.setForeground(Color.BLACK);
+        JButton exportFinancialBtn = createMinimalButton("Export Financial", new Color(100, 100, 110));
         exportFinancialBtn.addActionListener(e -> exportFinancialReport());
         section.add(exportFinancialBtn);
 
-        JButton exportAcademicBtn = createExportButton("Export Academic Report");
-        exportAcademicBtn.setBackground(Color.WHITE);
-        exportAcademicBtn.setForeground(Color.BLACK);
+        JButton exportAcademicBtn = createMinimalButton("Export Academic", new Color(100, 100, 110));
         exportAcademicBtn.addActionListener(e -> exportAcademicReport());
         section.add(exportAcademicBtn);
 
         return section;
     }
 
-    private JPanel createStatCard(String title, JLabel valueLabel, Color color) {
-        JPanel card = new JPanel(new BorderLayout(10, 10));
-        card.setBackground(Color.WHITE);
+    private JPanel createMinimalStatCard(String title, JLabel valueLabel, String icon, Color accentColor) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(new Color(250, 250, 252));
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(color, 2),
-                new EmptyBorder(20, 20, 20, 20)));
+                BorderFactory.createLineBorder(new Color(230, 230, 235), 1),
+                BorderFactory.createEmptyBorder(25, 25, 25, 25)));
 
+        // Icon
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font("Arial Unicode MS", Font.PLAIN, 24));
+        iconLabel.setForeground(accentColor);
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+
+        // Value
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        valueLabel.setForeground(new Color(45, 45, 45));
+
+        // Title
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        titleLabel.setForeground(Color.GRAY);
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        titleLabel.setForeground(new Color(120, 120, 120));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 
-        valueLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        valueLabel.setForeground(color);
-        valueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        // Arrange vertically
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
 
-        card.add(titleLabel, BorderLayout.NORTH);
-        card.add(valueLabel, BorderLayout.CENTER);
+        iconLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        contentPanel.add(iconLabel);
+        contentPanel.add(valueLabel);
+        contentPanel.add(titleLabel);
+
+        card.add(contentPanel, BorderLayout.WEST);
 
         return card;
     }
 
     private JButton createExportButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBackground(new Color(52, 152, 219));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(220, 40));
-        return button;
+        return createMinimalButton(text, new Color(70, 130, 180));
     }
 
     private void loadReportData() {
@@ -306,16 +379,9 @@ public class ReportsPanel extends JPanel {
         }
 
         try {
-            // Load Student Statistics
             loadStudentStatistics();
-
-            // Load Financial Statistics
             loadFinancialStatistics();
-
-            // Load Academic Statistics
             loadAcademicStatistics();
-
-            // Load System Activity Statistics
             loadSystemActivityStatistics();
 
         } catch (Exception e) {
@@ -329,11 +395,18 @@ public class ReportsPanel extends JPanel {
 
     private void loadStudentStatistics() {
         try {
+            JTabbedPane tabbedPane = (JTabbedPane) ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.CENTER);
+            JPanel studentPanel = (JPanel) tabbedPane.getComponentAt(0);
+            JScrollPane scrollPane = (JScrollPane) studentPanel.getComponent(0);
+            JTable table = (JTable) scrollPane.getViewport().getView();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+
             // Total Students
             String sql = "SELECT COUNT(*) as total FROM students";
             ResultSet rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                totalStudentsLabel.setText(String.valueOf(rs.getInt("total")));
+                model.addRow(new Object[] { "Total Students", rs.getInt("total") });
                 rs.close();
             }
 
@@ -341,7 +414,25 @@ public class ReportsPanel extends JPanel {
             sql = "SELECT COUNT(*) as total FROM students WHERE status = 'Active'";
             rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                activeStudentsLabel.setText(String.valueOf(rs.getInt("total")));
+                model.addRow(new Object[] { "Active Students", rs.getInt("total") });
+                rs.close();
+            }
+
+            // Inactive Students
+            sql = "SELECT COUNT(*) as total FROM students WHERE status != 'Active'";
+            rs = db.executePreparedSelect(sql, new Object[] {});
+            if (rs != null && rs.next()) {
+                model.addRow(new Object[] { "Inactive Students", rs.getInt("total") });
+                rs.close();
+            }
+
+            // By Program
+            sql = "SELECT program, COUNT(*) as count FROM students GROUP BY program";
+            rs = db.executePreparedSelect(sql, new Object[] {});
+            if (rs != null) {
+                while (rs.next()) {
+                    model.addRow(new Object[] { rs.getString("program"), rs.getInt("count") });
+                }
                 rs.close();
             }
 
@@ -352,37 +443,39 @@ public class ReportsPanel extends JPanel {
 
     private void loadFinancialStatistics() {
         try {
+            JTabbedPane tabbedPane = (JTabbedPane) ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.CENTER);
+            JPanel financialPanel = (JPanel) tabbedPane.getComponentAt(1);
+            JScrollPane scrollPane = (JScrollPane) financialPanel.getComponent(0);
+            JTable table = (JTable) scrollPane.getViewport().getView();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("en", "UG"));
 
-            // Total Fees (sum of all fee balances - this represents what's owed)
+            // Total Outstanding
             String sql = "SELECT SUM(fee_balance) as total FROM students";
             ResultSet rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                double total = rs.getDouble("total");
-                totalOutstandingLabel.setText(currencyFormat.format(total));
+                model.addRow(new Object[] { "Outstanding Balance", currencyFormat.format(rs.getDouble("total")) });
                 rs.close();
             }
 
-            // Total Payments (amount paid)
-            sql = "SELECT SUM(amount) as total, COUNT(*) as count FROM payments";
+            // Total Paid
+            sql = "SELECT SUM(amount) as total FROM payments";
+            rs = db.executePreparedSelect(sql, new Object[] {});
+            double totalPaid = 0;
+            if (rs != null && rs.next()) {
+                totalPaid = rs.getDouble("total");
+                model.addRow(new Object[] { "Total Collected", currencyFormat.format(totalPaid) });
+                rs.close();
+            }
+
+            // Total Transactions
+            sql = "SELECT COUNT(*) as count FROM payments";
             rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                double totalPaid = rs.getDouble("total");
-                int paymentCount = rs.getInt("count");
-                totalPaidLabel.setText(currencyFormat.format(totalPaid));
-                totalPaymentsLabel.setText(String.valueOf(paymentCount));
+                model.addRow(new Object[] { "Total Transactions", rs.getInt("count") });
                 rs.close();
-            }
-
-            // Calculate total fees expected (paid + outstanding)
-            try {
-                String paidText = totalPaidLabel.getText().replaceAll("[^0-9.]", "");
-                String outstandingText = totalOutstandingLabel.getText().replaceAll("[^0-9.]", "");
-                double paid = Double.parseDouble(paidText);
-                double outstanding = Double.parseDouble(outstandingText);
-                totalFeesLabel.setText(currencyFormat.format(paid + outstanding));
-            } catch (Exception e) {
-                totalFeesLabel.setText("UGX 0.00");
             }
 
         } catch (Exception e) {
@@ -392,11 +485,18 @@ public class ReportsPanel extends JPanel {
 
     private void loadAcademicStatistics() {
         try {
+            JTabbedPane tabbedPane = (JTabbedPane) ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.CENTER);
+            JPanel academicPanel = (JPanel) tabbedPane.getComponentAt(2);
+            JScrollPane scrollPane = (JScrollPane) academicPanel.getComponent(0);
+            JTable table = (JTable) scrollPane.getViewport().getView();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+
             // Total Courses
             String sql = "SELECT COUNT(*) as total FROM courses";
             ResultSet rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                totalCoursesLabel.setText(String.valueOf(rs.getInt("total")));
+                model.addRow(new Object[] { "Total Courses", rs.getInt("total") });
                 rs.close();
             }
 
@@ -404,7 +504,23 @@ public class ReportsPanel extends JPanel {
             sql = "SELECT COUNT(*) as total FROM lecturers";
             rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                totalLecturersLabel.setText(String.valueOf(rs.getInt("total")));
+                model.addRow(new Object[] { "Total Lecturers", rs.getInt("total") });
+                rs.close();
+            }
+
+            // Course Registrations
+            sql = "SELECT COUNT(*) as total FROM course_registrations";
+            rs = db.executePreparedSelect(sql, new Object[] {});
+            if (rs != null && rs.next()) {
+                model.addRow(new Object[] { "Course Registrations", rs.getInt("total") });
+                rs.close();
+            }
+
+            // Grades Entered
+            sql = "SELECT COUNT(*) as total FROM grades WHERE grade IS NOT NULL";
+            rs = db.executePreparedSelect(sql, new Object[] {});
+            if (rs != null && rs.next()) {
+                model.addRow(new Object[] { "Grades Entered", rs.getInt("total") });
                 rs.close();
             }
 
@@ -415,11 +531,18 @@ public class ReportsPanel extends JPanel {
 
     private void loadSystemActivityStatistics() {
         try {
+            JTabbedPane tabbedPane = (JTabbedPane) ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.CENTER);
+            JPanel systemPanel = (JPanel) tabbedPane.getComponentAt(3);
+            JScrollPane scrollPane = (JScrollPane) systemPanel.getComponent(0);
+            JTable table = (JTable) scrollPane.getViewport().getView();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+
             // Total Announcements
             String sql = "SELECT COUNT(*) as total FROM announcements";
             ResultSet rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                totalAnnouncementsLabel.setText(String.valueOf(rs.getInt("total")));
+                model.addRow(new Object[] { "Total Announcements", rs.getInt("total") });
                 rs.close();
             }
 
@@ -427,7 +550,15 @@ public class ReportsPanel extends JPanel {
             sql = "SELECT COUNT(*) as total FROM announcements WHERE is_active = TRUE";
             rs = db.executePreparedSelect(sql, new Object[] {});
             if (rs != null && rs.next()) {
-                activeAnnouncementsLabel.setText(String.valueOf(rs.getInt("total")));
+                model.addRow(new Object[] { "Active Announcements", rs.getInt("total") });
+                rs.close();
+            }
+
+            // Total Users
+            sql = "SELECT COUNT(*) as total FROM users WHERE is_active = TRUE";
+            rs = db.executePreparedSelect(sql, new Object[] {});
+            if (rs != null && rs.next()) {
+                model.addRow(new Object[] { "Active Users", rs.getInt("total") });
                 rs.close();
             }
 
